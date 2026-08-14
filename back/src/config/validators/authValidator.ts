@@ -7,6 +7,5 @@ export const RegisterSchema = z.object({
     phone: z.string().min(10, "Telefone deve ter pelo menos 10 caracteres"),
     birthday: z.string().min(1, "Data de nascimento é obrigatória"),
     gender: z.string().optional(),
-    password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),~
-    notifications: z.number().optional(),
+    password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
 });
