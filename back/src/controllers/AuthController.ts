@@ -1,12 +1,21 @@
 import { prisma } from '../config/prisma';
 import { Request, Response } from "express";
 import auth from '../config/auth';
+import { RegisterSchema } from '../config/validators/authValidator';
 
 export class AuthController {
     public static async register(request: Request, response: Response) {
         try {
-            const { firstName, lastName, email, phone, birthday, gender, password } = request.body;
+            const result = RegisterSchema.safeParse(request.body);
 
+            if (!result.success) {
+                return response.status(400).json({
+                    message: "Erro de validação",
+                    errors: result.error.issues
+                });
+            }
+
+            const { firstName, lastName, email, phone, birthday, gender, password } = request.body;
             const existingUser = await prisma.user.findUnique({
                 where: { email }
             });
@@ -58,7 +67,7 @@ export class AuthController {
             const token = auth.generateJWT(user.id);
             const { hash: _, salt: __, ...userWithoutSensitive } = user;
 
-            response.json({token, user: userWithoutSensitive});
+            response.json({ token, user: userWithoutSensitive });
         } catch (error: any) {
             response.status(500).json({ message: error.message });
         }
