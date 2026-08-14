@@ -15,7 +15,8 @@ export class AuthController {
                 });
             }
 
-            const { firstName, lastName, email, phone, birthday, gender, password } = request.body;
+            const { firstName, lastName, email, phone, birthday, gender, password, notifications } = request.body;
+
             const existingUser = await prisma.user.findUnique({
                 where: { email }
             });
@@ -35,8 +36,9 @@ export class AuthController {
                     birthday,
                     gender,
                     hash,
-                    salt
-                }
+                    salt,
+                    notifications: notifications ?? 0,
+                },
             });
 
             const { hash: _, salt: __, ...userWithoutSensitive } = user;
