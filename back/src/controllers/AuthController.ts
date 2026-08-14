@@ -1,7 +1,7 @@
 import { prisma } from '../config/prisma';
 import { Request, Response } from "express";
 import auth from '../config/auth';
-import { RegisterSchema } from '../config/validators/authValidator';
+import { RegisterSchema } from '.././config/validators/authValidator';
 
 export class AuthController {
     public static async register(request: Request, response: Response) {
