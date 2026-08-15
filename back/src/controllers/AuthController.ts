@@ -1,20 +1,10 @@
 import { prisma } from '../config/prisma';
 import { Request, Response } from "express";
 import auth from '../config/auth';
-import { RegisterSchema } from '.././config/validators/authValidator';
 
 export class AuthController {
     public static async register(request: Request, response: Response) {
         try {
-            const result = RegisterSchema.safeParse(request.body);
-
-            if (!result.success) {
-                return response.status(400).json({
-                    message: "Erro de validação",
-                    errors: result.error.issues
-                });
-            }
-
             const { firstName, lastName, email, gender, password, notifications } = request.body;
 
             const existingUser = await prisma.user.findUnique({
@@ -58,6 +48,7 @@ export class AuthController {
             if (!user) {
                 return response.status(401).json({ message: "Credenciais inválidas" });
             }
+
             const isValid = auth.checkPassword(password, user.hash, user.salt);
 
             if (!isValid) {
@@ -72,5 +63,4 @@ export class AuthController {
             response.status(500).json({ message: error.message });
         }
     }
-
 }
