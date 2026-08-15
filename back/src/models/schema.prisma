@@ -8,6 +8,27 @@ datasource db {
   provider = "postgresql"
 }
 
+model Product {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String
+  price         Float
+  discount      Float?
+  avgReview     Float?
+  specification String
+  tags          String[] //para que existam varias tags
+  category      String
+  inStock       Boolean
+
+  //variantes  Variante[]
+  //cartItems  Cart[]
+  //wishlists  Wishlist[]
+  //orderItems OrderItem[]
+  //reviews    Review[]
+}
+
+
+
 model User {
   id            Int @id @default(autoincrement())
   firstName     String
