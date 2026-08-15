@@ -48,7 +48,15 @@ model User {
   notifications Int
   profPicPath   String?
   //tags        Tags[]
-  //address     Address[]
+  address     Address[]
 }
 
-
+model Address{
+  id        Int    @id @default(autoincrement())
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  type      String
+  user      User[]
+}
