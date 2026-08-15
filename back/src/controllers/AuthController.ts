@@ -15,7 +15,7 @@ export class AuthController {
                 });
             }
 
-            const { firstName, lastName, email, phone, birthday, gender, password, notifications } = request.body;
+            const { firstName, lastName, email, gender, password, notifications } = request.body;
 
             const existingUser = await prisma.user.findUnique({
                 where: { email }
@@ -32,8 +32,6 @@ export class AuthController {
                     firstName,
                     lastName,
                     email,
-                    phone,
-                    birthday,
                     gender,
                     hash,
                     salt,
@@ -75,22 +73,4 @@ export class AuthController {
         }
     }
 
-    public static async me(request: Request, response: Response) {
-        try {
-            const userId = (request as any).userId;
-
-            const user = await prisma.user.findUnique({
-                where: { id: userId }
-            });
-
-            if (!user) {
-                return response.status(404).json({ message: "Usuário não encontrado" });
-            }
-
-            const { hash: _, salt: __, ...userWithoutSensitive } = user;
-            response.json(userWithoutSensitive);
-        } catch (error: any) {
-            response.status(500).json({ message: error.message });
-        }
-    }
 }
