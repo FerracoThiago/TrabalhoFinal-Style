@@ -59,8 +59,5 @@ export class UserController {
         } catch (e:any) {
             return res.status(500).json({message:e.message});
         }
-
     }
-
-
 }
