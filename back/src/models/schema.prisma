@@ -29,3 +29,18 @@ model Product {
 
 
 
+model User {
+  id            Int @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  email         String  @unique
+  phone         String
+  birthday      String
+  gender        String?
+  hash          String  
+  salt          String
+  notifications Int
+  profPicPath   String?
+  //tags        Tags[]
+  //address     Address[]
+}
