@@ -1,14 +1,11 @@
-import { Header } from './components/Header';
-import { Cadastro } from './pages/Cadastro/Cadastro';
+import { BrowserRouter } from 'react-router-dom';
+import { AppRoutes } from './routes/AppRoutes';
 
 export function App() {
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <main>
-        <Cadastro />
-      </main>
-    </div>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
 
