@@ -22,7 +22,7 @@ export const Cadastro: React.FC = () => {
       </div>
 
       {/* Card principal */}
-      <div className="w-full max-w-[480px] bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 shadow-sm">
+      <div className="w-full max-w-120 bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col items-center mb-6 text-center">
           <h1 className="text-2xl font-bold text-black mb-1">
             Create Account

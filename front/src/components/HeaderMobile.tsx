@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, Menu, X } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Menu, X } from 'lucide-react';
 
 export const HeaderMobile: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ export const HeaderMobile: React.FC = () => {
         </div>
 
         <div className="px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <button 
               type="button" 
               onClick={() => setMobileMenuOpen(true)}
@@ -26,18 +26,34 @@ export const HeaderMobile: React.FC = () => {
 
             <div 
               onClick={() => navigate('/')}
-              className="flex items-center space-x-2 select-none cursor-pointer"
+              className="flex items-center space-x-1.5 select-none cursor-pointer"
             >
               <div className="bg-black text-white font-bold px-2 py-1 rounded text-sm tracking-widest flex items-center justify-center">
                 S
               </div>
-              <span className="font-bold tracking-wider text-black text-base">
+              <span className="font-bold tracking-wider text-black text-sm">
                 STYLE
               </span>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            <button 
+              type="button" 
+              className="text-black hover:text-gray-600 transition-colors p-1"
+              aria-label="Pesquisar"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
+            <button 
+              type="button" 
+              className="text-black hover:text-gray-600 transition-colors p-1"
+              aria-label="Favoritos"
+            >
+              <Heart className="w-5 h-5" />
+            </button>
+
             <button 
               type="button" 
               onClick={() => navigate('/login')}

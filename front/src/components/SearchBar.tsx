@@ -3,7 +3,7 @@ import { Search } from 'lucide-react';
 
 export const SearchBar: React.FC = () => {
   return (
-    <div className="relative w-full max-w-[384px] h-[40px]">
+    <div className="relative w-full max-w-[384px] h-10">
       <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
         <Search className="w-4 h-4" />
       </span>
