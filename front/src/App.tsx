@@ -1,4 +1,4 @@
-import { Header } from './components/Header/Header';
+import { Header } from './components/Header';
 import { Cadastro } from './pages/Cadastro/Cadastro';
 
 export function App() {

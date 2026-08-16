@@ -1,6 +1,6 @@
 import React from 'react';
 import { Menu, Search, Heart, ShoppingBag } from 'lucide-react';
-import { TopBar } from './TopBar';
+import { TopBar } from './Header/TopBar';
 import logoHeader from '../../assets/images/logo-style-header.svg';
 
 export const Header: React.FC = () => {
