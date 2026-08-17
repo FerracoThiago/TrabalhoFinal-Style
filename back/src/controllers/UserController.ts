@@ -32,6 +32,19 @@ export class UserController {
         }
     }
 
+    public static async readAllUsers(req:Request,res:Response){
+        try {
+            const allUsers = await prisma.user.findMany();
+            if(!allUsers){
+                return res.status(404).json({message: "usuario não encontrado"});   
+            }
+            return res.status(200).json({allUsers});
+
+        } catch (e:any) {
+            return res.status(500).json({message:e.message});
+        }
+    }
+
     public static async updateUser(req:Request,res:Response){
         /*Auth token middleware */
         /*Identify user by token middleware */
