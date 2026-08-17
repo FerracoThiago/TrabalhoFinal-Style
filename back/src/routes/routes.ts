@@ -13,6 +13,7 @@ router.post("/auth/login", AuthController.login);
 /*UserController*/
 router.get("/user",authMiddleware,UserController.readUser);
 router.get("/user/many",UserController.readAllUsers);
-router.post("/user",authMiddleware,UserController.updateUser);
+router.put("/user",authMiddleware,UserController.updateUser);
 router.delete("/user",authMiddleware,UserController.deleteUser);
 
+export default router;
