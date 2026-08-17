@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx ts-node-dev --transpile-only --no-notify src/server.ts",
     "seeder": "ts-node src/models/seeders/seeder.ts",
-    "keys": "ts-node src/config/generateKeyPair.ts"
+    "keys": "ts-node src/config/generateKeyPairs.ts"
   },
   "keywords": [],
   "author": "",
