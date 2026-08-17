@@ -56,22 +56,28 @@ export class UserController {
                 return res.status(404).json({message:"usuario não encontrado"});
             }
             const {firstName,lastName,email,phone, birthday, gender, password, notifications} = req.body;
-            const {salt,hash} = auth.generatePassword(password);
-            const updatedUser = await prisma.user.update({
-                data:{
-                    firstName,
-                    lastName,
-                    email,
-                    phone,
-                    birthday,
-                    gender,
-                    hash,
-                    salt,
-                    notifications
+            const updatedUser: any = {
+                firstName,
+                lastName,
+                email,
+                phone,
+                gender,
+                notifications
+                };
 
-                },where:{id:userId}
+            if (birthday) {
+                updatedUser.birthday = new Date(birthday);
+            }
+            if (password) {
+                const { salt, hash } = auth.generatePassword(password);
+                updatedUser.hash = hash;
+                updatedUser.salt = salt;
+            }
+            const updated = await prisma.user.update({
+                data:updatedUser,
+                where:{id:userId}
             });
-            return res.status(200).json({message: "informações do usuario atualizadas!", id: userId});
+            return res.status(200).json({message: "informações do usuario atualizadas!", id: updated.id});
 
         } catch (e:any) {
             return res.status(500).json({message:e.message});
@@ -89,8 +95,10 @@ export class UserController {
             }
             return res.status(200).json({message: "Usuario deletado com sucesso!", id: deletedUser.id});
         } catch (e:any) {
-            return res.status(500).json({message:e.message});            
+            return res.status(500).json({message:e.message});
         }
     }
+
+
 }
 
