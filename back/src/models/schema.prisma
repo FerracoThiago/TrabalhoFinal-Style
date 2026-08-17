@@ -28,7 +28,8 @@ model User {
   notifications Int
   profPicPath   String?
   //tags        Tags[]
-  address     Address[]
+  address       Address[]
+  coupons       Cupom[]
 }
 
 model Address{
@@ -58,6 +59,18 @@ model Product {
   //wishlists  Wishlist[]
   //orderItems OrderItem[]
   //reviews    Review[]
+}
+
+model Cupom{
+  id            Int @id @default(autoincrement())
+  limite        Int
+  validate      DateTime
+  discountMax   Float
+  code          String
+  discount      Float
+
+  users         User[]
+//order         Order[]?
 }
 
 
