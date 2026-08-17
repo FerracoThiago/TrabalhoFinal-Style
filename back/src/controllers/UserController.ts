@@ -64,4 +64,20 @@ export class UserController {
             return res.status(500).json({message:e.message});
         }
     }
+
+    public static async deleteUser(req:Request,res:Response){
+        /*Auth token middleware*/
+        /*Get user id by token middleware */
+        try {
+            const userId = res.locals.user.id;
+            const deletedUser = await prisma.user.delete({where:{id:userId}});
+            if(!deletedUser){
+                return res.status(404).json({message:"usuario nao encontrado"});
+            }
+            return res.status(200).json({message: "Usuario deletado com sucesso!", id: deletedUser.id});
+        } catch (e:any) {
+            return res.status(500).json({message:e.message});            
+        }
+    }
 }
+
