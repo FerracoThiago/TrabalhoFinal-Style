@@ -28,7 +28,8 @@ model User {
   notifications Int
   profPicPath   String?
   //tags        Tags[]
-  address     Address[]
+  address       Address[]
+  orders         Order[]
 }
 
 model Address{
@@ -49,16 +50,42 @@ model Product {
   discount      Float?
   avgReview     Float?
   specification String
-  tags          String[] //para que existam varias tags
+  tags          String[] 
   category      String
   inStock       Boolean
 
   //variantes  Variante[]
   //cartItems  Cart[]
   //wishlists  Wishlist[]
-  //orderItems OrderItem[]
+  orderItems OrderItem[]
   //reviews    Review[]
 }
 
+model Order {
+  id            Int      @id @default(autoincrement())
+  time          DateTime @default(now())
+  status        String
+  total         Float
+  paymentMethod String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  cupomId Int?
+  //cupom Cupom @relation(fields: [cupomId], references: [id])
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id       Int @id @default(autoincrement())
+  quantity Int
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
 
 
