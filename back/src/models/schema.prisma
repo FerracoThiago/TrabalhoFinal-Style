@@ -27,11 +27,22 @@ model User {
   salt          String
   notifications Int
   profPicPath   String?
-  //tags        Tags[]
+
+  tags          Tags[]
   address       Address[]
   coupons       Cupom[]
-  orders         Order[]
+  orders        Order[]
+  wishlist      Wishlist[]
+  cart          Cart[]
+  reviews       Review[]
 }
+
+model Tags{
+  id        Int    @id @default(autoincrement())
+  content   String
+  user      User[]
+}
+
 
 model Address{
   id        Int    @id @default(autoincrement())
@@ -41,6 +52,70 @@ model Address{
   zipCode   String
   type      String
   user      User[]
+}
+
+model Cupom{
+  id            Int @id @default(autoincrement())
+  usageLimit    Int
+  validate      DateTime
+  discountMax   Float
+  code          String
+  discount      Float
+
+  users         User[]
+  order         Order[]
+}
+
+model Cart{
+  id          Int @id @default(autoincrement())
+  total       Float
+  subtotal    Float
+  savings     Float
+  shipping    Float
+  promoCode   String?
+
+  userId      Int  @unique
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items       Product[]       //implicit n:n
+}
+
+model Wishlist{
+  id       Int @id @default(autoincrement())
+
+  userId   Int  @unique
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items    Product[]       //implicit n:n
+
+}
+
+model Review{
+  id        Int      @id @default(autoincrement())
+  rating    Int
+
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)   //faz sentido se o usuário for deletado, o review continua existindo
+
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+}
+
+model Order {
+  id            Int      @id @default(autoincrement())
+  time          DateTime @default(now())
+  status        String
+  total         Float
+  paymentMethod String
+
+  userId        Int
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  cupomId       Int?
+  cupom         Cupom? @relation(fields: [cupomId], references: [id], onDelete: SetNull)
+
+  items         OrderItem[]
 }
 
 model Product {
@@ -55,50 +130,23 @@ model Product {
   category      String
   inStock       Boolean
 
-  //variantes  Variante[]
-  //cartItems  Cart[]
-  //wishlists  Wishlist[]
-  orderItems OrderItem[]
-  //reviews    Review[]
+  //variants    Variante[]
+  cartItems     Cart[]         //implicit n:n
+  wishlists     Wishlist[]     //implicit n:n
+  orderItems    OrderItem[]
+  reviews       Review[]
 }
 
-model Cupom{
-  id            Int @id @default(autoincrement())
-  limite        Int
-  validate      DateTime
-  discountMax   Float
-  code          String
-  discount      Float
-
-  users         User[]
-//order         Order[]?
-}
-
-model Order {
-  id            Int      @id @default(autoincrement())
-  time          DateTime @default(now())
-  status        String
-  total         Float
-  paymentMethod String
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  cupomId Int?
-  //cupom Cupom @relation(fields: [cupomId], references: [id])
-
-  items OrderItem[]
-}
 
 model OrderItem {
-  id       Int @id @default(autoincrement())
-  quantity Int
+  id          Int @id @default(autoincrement())
+  quantity    Int
 
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     Int
+  order       Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  productId Int
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 
