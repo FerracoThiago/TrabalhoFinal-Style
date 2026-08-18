@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import auth from "../config/auth";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
