@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Heart, ShoppingBag } from 'lucide-react';
+import { Logo } from './Logo';
 
 export const HeaderDesktop: React.FC = () => {
   const navigate = useNavigate();
@@ -15,14 +16,10 @@ export const HeaderDesktop: React.FC = () => {
         <div className="flex items-center space-x-4">
           <div 
             onClick={() => navigate('/')}
-            className="flex items-center space-x-2 select-none cursor-pointer"
+            style={{ width: "76px", height: "32px", paddingLeft: "8px", opacity: 1 }}
+            className="flex items-center select-none cursor-pointer"
           >
-            <div className="bg-black text-white font-bold px-2.5 py-1 rounded text-sm tracking-widest flex items-center justify-center">
-              S
-            </div>
-            <span className="font-bold tracking-wider text-black text-lg">
-              STYLE
-            </span>
+            <Logo variant="header" className="h-full w-full object-contain" />
           </div>
         </div>
 

@@ -4,7 +4,7 @@ import { Menu, Search, Heart, ShoppingBag } from "lucide-react";
 
 export const HeaderMobile: React.FC = () => {
   return (
-    <div className="w-full">
+    <div className="block md:hidden w-full">
       <div 
         className="w-full bg-black text-white py-1 px-4 text-center"
         style={{
