@@ -1,6 +1,6 @@
 import React from "react";
 import { Logo } from "./Logo";
-import { Menu, Search, Heart, User, ShoppingBag } from "lucide-react";
+import { Menu, Search, Heart, ShoppingBag } from "lucide-react";
 
 export const HeaderMobile: React.FC = () => {
   return (
@@ -20,11 +20,13 @@ export const HeaderMobile: React.FC = () => {
       </div>
 
       <header className="w-full bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-5">
           <button aria-label="Menu" className="text-gray-700 focus:outline-none">
             <Menu className="w-6 h-6" />
           </button>
-          <Logo variant="header" className="h-6" />
+          <div style={{ width: "76px", height: "32px", paddingLeft: "8px", opacity: 1 }} className="flex items-center">
+            <Logo variant="header" className="h-full w-full object-contain" />
+          </div>
         </div>
 
         <div className="flex items-center space-x-3 text-gray-700">
