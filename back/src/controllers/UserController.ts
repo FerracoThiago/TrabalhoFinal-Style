@@ -98,7 +98,27 @@ export class UserController {
             return res.status(500).json({message:e.message});
         }
     }
+    /*
+    public static async setProfPicUser(req:Request,res:Response){
+        try {
 
+            const userId = res.locals.user.id;
+            if(!req.file){
+                return  res.status(404).json({message:"imagem não encontrada"})
+            }
+            const profPicName = req.file.filename;
+            await prisma.user.update({
+                data:{profPicPath:profPicName},
+                where:{id:userId}
+            });
+            return res.status(200).json({message: "foto de perfil cadastrada com sucesso!"});
+
+        } catch (e:any) {
+            return res.status(500).json({message:e.message});
+        }
+
+    }
+    */
 
 }
 
