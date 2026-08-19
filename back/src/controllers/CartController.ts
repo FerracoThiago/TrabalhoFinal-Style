@@ -43,7 +43,7 @@ export class CartController {
         }
     }
 
-    //a avaliar
+    // adiciona item ao carrinho, se já existir incrementa a quantidade
     public static async updateCart(req: Request, res: Response) {
         try {
             const userId = res.locals.user.id;
@@ -103,7 +103,7 @@ export class CartController {
         }
     }
 
-    //a avaliar
+    //decrementa item até 0
     public static async deleteCartItem(req: Request, res: Response) {
         try {
             const userId = res.locals.user.id;
@@ -127,9 +127,18 @@ export class CartController {
                 return res.status(403).json({ message: "Item não pertence ao seu carrinho" });
             }
 
-            await prisma.cartItem.delete({
-                where: { id: itemId }
-            });
+            const newQuantity = item.quantity - 1;
+
+            if (newQuantity <= 0) {
+                await prisma.cartItem.delete({
+                    where: { id: itemId }
+                });
+            } else {
+                await prisma.cartItem.update({
+                    where: { id: itemId },
+                    data: { quantity: newQuantity }
+                });
+            }
 
             const updatedCart = await prisma.cart.findUnique({
                 where: { userId },
