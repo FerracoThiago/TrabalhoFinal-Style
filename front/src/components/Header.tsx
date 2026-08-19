@@ -15,19 +15,22 @@ const Header: React.FC = () => {
           Free shipping on orders over $100 | New arrivals daily
         </div>
         <div className="w-full bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-between">
-          <div className="flex items-center space-x-5">
+          <div className="flex items-center gap-5 text-gray-700">
             <button aria-label="Menu" className="text-gray-700">
               <Menu className="w-6 h-6" />
             </button>
-            <div style={{ width: "76px", height: "32px", paddingLeft: "8px" }}>
+            <div style={{ width: "76px", height: "32px" }}>
               <Logo variant="header" className="h-full w-full object-contain" />
             </div>
           </div>
-          <div className="flex items-center space-x-3 text-gray-700">
+          <div className="flex items-center gap-9 text-gray-700">
             <Search className="w-5 h-5" />
             <Heart className="w-5 h-5" />
-            <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-xs font-semibold">JD</div>
-            <div className="relative"><ShoppingBag className="w-5 h-5" /><span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span></div>
+            <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-xs font-semibold">JD</div>
+            <div className="relative">
+              <ShoppingBag className="w-5 h-5" />
+              <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
+            </div>
           </div>
         </div>
       </div>
