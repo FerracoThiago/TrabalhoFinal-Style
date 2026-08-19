@@ -2,6 +2,7 @@ import React from 'react';
 import { Menu, Search, Heart, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from './Logo';
+import { SearchBar } from './SearchBar';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -36,21 +37,29 @@ const Header: React.FC = () => {
         <div className="w-full bg-black text-white text-[11px] text-center py-1.5 px-4 tracking-wide">
           Free shipping on orders over $100 | New arrivals daily
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="cursor-pointer" onClick={() => navigate('/')} style={{ width: "76px", height: "32px", paddingLeft: "8px" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
+          <div className="cursor-pointer shrink-0" onClick={() => navigate('/')} style={{ width: "76px", height: "32px", paddingLeft: "8px" }}>
             <Logo variant="header" className="h-full w-full object-contain" />
           </div>
-          <nav className="flex items-center space-x-8 text-sm font-medium text-black">
+          <nav className="flex items-center space-x-8 text-sm font-medium text-black shrink-0">
             <button onClick={() => navigate('/new-in')}>New In</button>
             <button onClick={() => navigate('/women')}>Women</button>
             <button onClick={() => navigate('/men')}>Men</button>
             <button onClick={() => navigate('/sale')}>Sale</button>
           </nav>
-          <div className="flex items-center space-x-6">
-            <Search className="w-4 h-4 text-gray-400" />
-            <Heart className="w-5 h-5" />
+          
+          <div className="flex-1 max-w-md mx-4">
+            <SearchBar 
+              placeholder="Search for products..." 
+              value="" 
+              onChange={() => {}} 
+            />
+          </div>
+
+          <div className="flex items-center space-x-6 shrink-0">
+            <Heart className="w-5 h-5 cursor-pointer" />
             <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-xs font-semibold">JD</div>
-            <div className="relative"><ShoppingBag className="w-5 h-5" /><span className="absolute -top-1 -right-1 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span></div>
+            <div className="relative cursor-pointer"><ShoppingBag className="w-5 h-5" /><span className="absolute -top-1 -right-1 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span></div>
           </div>
         </div>
       </div>
