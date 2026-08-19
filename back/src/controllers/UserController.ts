@@ -62,7 +62,7 @@ export class UserController {
                 email,
                 phone,
                 gender,
-                notifications: Boolean(notifications)
+                notifications
                 };
 
             if (birthday) {
