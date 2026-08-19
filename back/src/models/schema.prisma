@@ -130,13 +130,22 @@ model Product {
   category      String
   inStock       Boolean
 
-  //variants    Variante[]
+  //variants    Variant[]
   cartItems     Cart[]         //implicit n:n
   wishlists     Wishlist[]     //implicit n:n
   orderItems    OrderItem[]
   reviews       Review[]
 }
-
+/*
+model Variant{      //decidir se n:n ou 1:n ainda
+  id          Int @id @default(autoincrement())
+  size        String?
+  color       String?
+  stock       Int
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+*/
 
 model OrderItem {
   id          Int @id @default(autoincrement())
