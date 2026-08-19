@@ -62,7 +62,7 @@ export class UserController {
                 email,
                 phone,
                 gender,
-                notifications
+                notifications: Boolean(notifications)
                 };
 
             if (birthday) {
@@ -98,7 +98,7 @@ export class UserController {
             return res.status(500).json({message:e.message});
         }
     }
-    /*
+    
     public static async setProfPicUser(req:Request,res:Response){
         try {
 
@@ -118,7 +118,7 @@ export class UserController {
         }
 
     }
-    */
+    
 
 }
 
