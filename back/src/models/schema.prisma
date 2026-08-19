@@ -83,11 +83,10 @@ model Cart{
 model Wishlist{
   id       Int @id @default(autoincrement())
 
-  userId   Int  @unique
+  userId   Int  @unique     //cada usuario so tem 1 wishlist
   user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   items    Product[]       //implicit n:n
-
 }
 
 model Review{
@@ -130,14 +129,14 @@ model Product {
   category      String
   inStock       Boolean
 
-  //variants    Variant[]
+  variants      Variant[]
   cartItems     Cart[]         //implicit n:n
   wishlists     Wishlist[]     //implicit n:n
   orderItems    OrderItem[]
   reviews       Review[]
 }
-/*
-model Variant{      //decidir se n:n ou 1:n ainda
+
+model Variant{
   id          Int @id @default(autoincrement())
   size        String?
   color       String?
@@ -145,7 +144,7 @@ model Variant{      //decidir se n:n ou 1:n ainda
   productId   Int
   product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
-*/
+
 
 model OrderItem {
   id          Int @id @default(autoincrement())
