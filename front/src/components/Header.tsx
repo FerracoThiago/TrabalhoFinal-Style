@@ -23,7 +23,7 @@ const Header: React.FC = () => {
               <Logo variant="header" className="h-full w-full object-contain" />
             </div>
           </div>
-          <div className="flex items-center gap-9 text-gray-700">
+          <div className="flex items-center gap-8 space-x-3 text-gray-700">
             <Search className="w-5 h-5" />
             <Heart className="w-5 h-5" />
             <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-xs font-semibold">JD</div>
