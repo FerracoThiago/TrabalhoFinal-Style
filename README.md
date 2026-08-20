@@ -44,6 +44,7 @@ $ cd ..
 $ cd backend
 $ npx prisma migrate dev
 $ npx prisma generate
+$ npm run keys
 ```
 
 
