@@ -11,6 +11,34 @@ export const Cadastro: React.FC = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [newsletterAccepted, setNewsletterAccepted] = useState(true);
 
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const response = await fetch('http://localhost:3333/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password,
+        notifications: newsletterAccepted ? 1 : 0,
+      }),
+    });
+
+    const data = await response.json();
+
+    console.log('Resposta do cadastro:', data);
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-start py-8 px-4">
       {/* Logo principal e subtítulo */}
@@ -62,43 +90,55 @@ export const Cadastro: React.FC = () => {
         </div>
 
         {/* Formulário */}
-        <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <Input 
-              label="First name" 
-              placeholder="First name" 
-              icon={<User className="w-4 h-4" />} 
+            <Input
+              label="First name"
+              placeholder="First name"
+              icon={<User className="w-4 h-4" />}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
-            <Input 
-              label="Last name" 
-              placeholder="Last name" 
+
+            <Input
+              label="Last name"
+              placeholder="Last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
 
-          <Input 
-            label="Email address" 
-            type="email" 
-            placeholder="Enter your email" 
-            icon={<Mail className="w-4 h-4" />} 
+          <Input
+            label="Email address"
+            type="email"
+            placeholder="Enter your email"
+            icon={<Mail className="w-4 h-4" />}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <div>
-            <Input 
-              label="Password" 
-              isPassword={true} 
-              placeholder="Create a password" 
-              icon={<Lock className="w-4 h-4" />} 
+            <Input
+              label="Password"
+              isPassword={true}
+              placeholder="Create a password"
+              icon={<Lock className="w-4 h-4" />}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
+
             <p className="text-[11px] text-gray-500 mt-1">
               Must be at least 8 characters long
             </p>
           </div>
 
-          <Input 
-            label="Confirm password" 
-            isPassword={true} 
-            placeholder="Confirm your password" 
-            icon={<Lock className="w-4 h-4" />} 
+          <Input
+            label="Confirm password"
+            isPassword={true}
+            placeholder="Confirm your password"
+            icon={<Lock className="w-4 h-4" />}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
 
           {/* Checkboxes */}
@@ -108,6 +148,7 @@ export const Cadastro: React.FC = () => {
               onChange={() => setTermsAccepted(!termsAccepted)}
               label="I agree to the Terms of Service and Privacy Policy"
             />
+
             <Checkbox
               checked={newsletterAccepted}
               onChange={() => setNewsletterAccepted(!newsletterAccepted)}
