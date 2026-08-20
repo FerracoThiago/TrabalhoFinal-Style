@@ -1,7 +1,7 @@
-import { prisma } from '../config/prisma';
 import { Request, Response } from "express";
 import auth from '../config/auth';
 import { Mailer } from '../config/mail';
+import { prisma } from '../config/prisma';
 
 export class AuthController {
     public static async register(request: Request, response: Response) {

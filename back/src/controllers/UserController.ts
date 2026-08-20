@@ -11,7 +11,7 @@ export class UserController {
         /*Auth token middleware */
         /*Identify user by token middleware */
         try {
-            const userId = res.locals.user.id;      /*recebido da identify token middleware*/
+            const userId = Number(res.locals.user.id);      /*recebido da identify token middleware*/
             const foundUser = await prisma.user.findUnique({where:{id:userId}});
             if(!foundUser){
                 return res.status(404).json({message: "usuario não encontrado"})
@@ -23,7 +23,8 @@ export class UserController {
                 email: foundUser.email,
                 phone: foundUser.phone,
                 birthday: foundUser.birthday,
-                gender: foundUser.gender
+                gender: foundUser.gender,
+                profPicFile: foundUser.profPicFile
 
             });
 
@@ -50,7 +51,7 @@ export class UserController {
         /*Identify user by token middleware */
         /*Field validator middleware */
         try {
-            const userId = res.locals.user.id;      //via mittleware de identificação do id pelo token
+            const userId = Number(res.locals.user.id);      //via mittleware de identificação do id pelo token
             const foundUser = await prisma.user.findUnique({where:{id:userId}});
             if(!foundUser){
                 return res.status(404).json({message:"usuario não encontrado"});
@@ -88,7 +89,7 @@ export class UserController {
         /*Auth token middleware*/
         /*Get user id by token middleware */
         try {
-            const userId = res.locals.user.id;
+            const userId = Number(res.locals.user.id);
             const deletedUser = await prisma.user.delete({where:{id:userId}});
             if(!deletedUser){
                 return res.status(404).json({message:"usuario nao encontrado"});
@@ -102,13 +103,14 @@ export class UserController {
     public static async setProfPicUser(req:Request,res:Response){
         try {
 
-            const userId = res.locals.user.id;
+            const userId = Number(res.locals.user.id);
+
             if(!req.file){
                 return  res.status(404).json({message:"imagem não encontrada"})
             }
             const profPicName = req.file.filename;
             await prisma.user.update({
-                data:{profPicPath:profPicName},
+                data:{profPicFile:profPicName},
                 where:{id:userId}
             });
             return res.status(200).json({message: "foto de perfil cadastrada com sucesso!"});

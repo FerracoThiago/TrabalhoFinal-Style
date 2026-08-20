@@ -26,7 +26,7 @@ model User {
   hash          String  
   salt          String
   notifications Boolean
-  profPicPath   String?
+  profPicFile   String?
 
   tags          Tags[]
   address       Address[]
