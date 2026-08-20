@@ -25,8 +25,8 @@ model User {
   gender        gender?
   hash          String  
   salt          String
-  notifications Int
-  profPicPath   String?
+  notifications Boolean
+  profPicFile   String?
 
   tags          Tags[]
   address       Address[]
