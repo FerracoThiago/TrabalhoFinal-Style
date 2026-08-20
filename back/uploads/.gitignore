@@ -3,3 +3,10 @@
     # Except this file
     !.gitignore
     
+# Allow the upload subfolders and their .gitkeep markers
+!photos/
+!photos/.gitkeep
+!videos/
+!videos/.gitkeep
+!audios/
+!audios/.gitkeep

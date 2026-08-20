@@ -1,6 +1,7 @@
 import { prisma } from '../config/prisma';
 import { Request, Response } from "express";
 import auth from '../config/auth';
+import { Mailer } from '../config/mail';
 
 export class AuthController {
     public static async register(request: Request, response: Response) {
@@ -55,8 +56,14 @@ export class AuthController {
                 return response.status(401).json({ message: "Credenciais inválidas" });
             }
 
-            const token = auth.generateJWT(user.id);
+            const token = auth.generateJWT(String(user.id));
             const { hash: _, salt: __, ...userWithoutSensitive } = user;
+
+            Mailer.sendEmail(
+                user.email,
+                "Login realizado com sucesso",
+                `Olá ${user.firstName}, você realizou login em sua conta. Se não foi você, por favor, entre em contato conosco imediatamente.`
+            );
 
             response.json({ token, user: userWithoutSensitive });
         } catch (error: any) {
