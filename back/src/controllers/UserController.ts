@@ -98,7 +98,7 @@ export class UserController {
             return res.status(500).json({message:e.message});
         }
     }
-    
+
     public static async setProfPicUser(req:Request,res:Response){
         try {
 
