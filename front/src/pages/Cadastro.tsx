@@ -33,7 +33,10 @@ export const Cadastro: React.FC = () => {
           password,
           notifications: newsletterAccepted ? 1 : 0,
         }),
-      });
+      }); 
+      console.log('usuário registrado');
+      window.alert('usuário cadastrado com sucesso');
+      
     } catch (error) {
       // Tratamento de erro será feito posteriormente.
     }
