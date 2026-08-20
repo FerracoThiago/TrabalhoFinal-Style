@@ -3,6 +3,7 @@ import { AuthController } from "../controllers/AuthController";
 import { UserController } from "../controllers/UserController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { validateRegister } from "../middlewares/validateMiddleware";
+import { CartController } from "../controllers/CartController";
 import { VariantController } from "../controllers/VariantController";
 import { validateCreateVariant, validateUpdateVariant } from "../middlewares/validateMiddleware";
 
@@ -18,6 +19,11 @@ router.get("/user/many",UserController.readAllUsers);
 router.put("/user",authMiddleware,UserController.updateUser);
 router.delete("/user",authMiddleware,UserController.deleteUser);
 
+/*CartController*/
+router.post("/cart", authMiddleware, CartController.createCart);
+router.get("/cart", authMiddleware, CartController.readCart);
+router.put("/cart", authMiddleware, CartController.updateCart);
+router.delete("/cart/clear", authMiddleware, CartController.deleteAllItemsInCart);
 /*Variant Controller*/
 router.post("/variant", authMiddleware, validateCreateVariant, VariantController.createVariant);
 router.get("/variant/:id", VariantController.readVariant);
