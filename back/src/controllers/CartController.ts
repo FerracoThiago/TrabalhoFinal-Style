@@ -13,7 +13,7 @@ export class CartController {
 
     public static async createCart(req: Request, res: Response) {
         try {
-            const userId = res.locals.user.id;
+            const userId = Number(res.locals.user.id);
 
             const existingCart = await prisma.cart.findUnique({
                 where: { userId }
@@ -41,7 +41,7 @@ export class CartController {
 
     public static async readCart(req: Request, res: Response) {
         try {
-            const userId = res.locals.user.id;
+            const userId = Number(res.locals.user.id);
 
             const cart = await prisma.cart.findUnique({
                 where: { userId },
@@ -66,10 +66,18 @@ export class CartController {
 
     public static async updateCart(req: Request, res: Response) {
         try {
-            const userId = res.locals.user.id;
+            const userId = Number(res.locals.user.id);
             const { productId, quantity, operation } = req.body;
             const qty = quantity || 1;
             const op = operation || "add";
+
+            const product = await prisma.product.findUnique({
+                where: { id: productId }
+            });
+
+            if (!product) {
+                return res.status(404).json({ message: "Produto não encontrado" });
+            }
 
             let cart = await prisma.cart.findUnique({
                 where: { userId },
@@ -86,17 +94,12 @@ export class CartController {
 
             if (op === "add") {
                 if (existingItem) {
-                    await prisma.cartProduct.update({
-                        where: {
-                            cartId_productId: {
-                                cartId: cart.id,
-                                productId
-                            }
-                        },
+                    await prisma.cartItem.update({
+                        where: { id: existingItem.id },
                         data: { quantity: existingItem.quantity + qty }
                     });
                 } else {
-                    await prisma.cartProduct.create({
+                    await prisma.cartItem.create({
                         data: {
                             cartId: cart.id,
                             productId,
@@ -112,22 +115,12 @@ export class CartController {
                 const newQuantity = existingItem.quantity - qty;
 
                 if (newQuantity <= 0) {
-                    await prisma.cartProduct.delete({
-                        where: {
-                            cartId_productId: {
-                                cartId: cart.id,
-                                productId
-                            }
-                        }
+                    await prisma.cartItem.delete({
+                        where: { id: existingItem.id }
                     });
                 } else {
-                    await prisma.cartProduct.update({
-                        where: {
-                            cartId_productId: {
-                                cartId: cart.id,
-                                productId
-                            }
-                        },
+                    await prisma.cartItem.update({
+                        where: { id: existingItem.id },
                         data: { quantity: newQuantity }
                     });
                 }
@@ -140,7 +133,7 @@ export class CartController {
                 include: { items: true }
             });
 
-            await this.updateNotification(userId, updatedCart);
+            await CartController.updateNotification(userId, updatedCart);
 
             const cartWithProducts = await prisma.cart.findUnique({
                 where: { userId },
@@ -155,7 +148,7 @@ export class CartController {
 
     public static async deleteAllItemsInCart(req: Request, res: Response) {
         try {
-            const userId = res.locals.user.id;
+            const userId = Number(res.locals.user.id);
 
             const cart = await prisma.cart.findUnique({
                 where: { userId }
@@ -165,7 +158,7 @@ export class CartController {
                 return res.status(404).json({ message: "Carrinho não encontrado" });
             }
 
-            await prisma.cartProduct.deleteMany({
+            await prisma.cartItem.deleteMany({
                 where: { cartId: cart.id }
             });
 
@@ -174,7 +167,7 @@ export class CartController {
                 include: { items: true }
             });
 
-            await this.updateNotification(userId, updatedCart);
+            await CartController.updateNotification(userId, updatedCart);
 
             res.status(200).json({ message: "Carrinho esvaziado" });
         } catch (e: any) {

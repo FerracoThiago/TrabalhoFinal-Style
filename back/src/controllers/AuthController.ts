@@ -26,7 +26,7 @@ export class AuthController {
                     gender,
                     hash,
                     salt,
-                    notifications,
+                    notifications: false,
                 },
             });
 
