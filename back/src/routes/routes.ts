@@ -6,6 +6,8 @@ import { UserController } from "../controllers/UserController";
 import { VariantController } from "../controllers/VariantController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
+import { ProductController } from "../controllers/ProductController";
+import { validateCreateProduct, validateUpdateProduct } from "../middlewares/productMiddleware";
 
 const router = Router();
 
@@ -32,4 +34,10 @@ router.get("/product/:productId/variants", VariantController.readVariantsByProdu
 router.put("/variant/:id", authMiddleware, validateUpdateVariant, VariantController.updateVariant);
 router.delete("/variant/:id", authMiddleware, VariantController.deleteVariant);
 
+/*Product Controller*/
+router.post("/product", validateCreateProduct, ProductController.createProduct);
+router.get("/product/:id", ProductController.readProduct);
+router.get("/product", ProductController.readAllProducts);
+router.put("/product/:id", validateUpdateProduct, ProductController.updateProduct);
+router.delete("/product/:id", ProductController.deleteProduct);
 export default router;
