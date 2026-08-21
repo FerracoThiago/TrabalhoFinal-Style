@@ -5,7 +5,9 @@ export class ProductController {
 
     public static async createProduct(req: Request, res: Response) {
         try {
-            const { name, description, price, specification, tags, category, inStock } = req.body;
+            const photo = req.file;
+            const { name, description, price, specification, tags, category, inStock, variants } = req.body;
+
             const createdProduct = await prisma.product.create({
                 data: {
                     name,
@@ -14,9 +16,19 @@ export class ProductController {
                     specification,
                     tags,
                     category,
-                    inStock
-                }
+                    inStock,
+                    variants: {
+                        create: {
+                            size: variants.size,
+                            color: variants.color,
+                            stock: variants.stock,
+                        }
+                    },
+                    profPicFile: photo ? photo.path : null,
+                },
+                include: { variants: true }
             });
+
             return res.status(201).json(createdProduct);
         }
         catch (e: any) {
