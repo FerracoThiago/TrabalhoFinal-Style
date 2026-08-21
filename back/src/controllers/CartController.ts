@@ -86,17 +86,12 @@ export class CartController {
 
             if (op === "add") {
                 if (existingItem) {
-                    await prisma.cartProduct.update({
-                        where: {
-                            cartId_productId: {
-                                cartId: cart.id,
-                                productId
-                            }
-                        },
+                    await prisma.cartItem.update({
+                        where: { id: existingItem.id },
                         data: { quantity: existingItem.quantity + qty }
                     });
                 } else {
-                    await prisma.cartProduct.create({
+                    await prisma.cartItem.create({
                         data: {
                             cartId: cart.id,
                             productId,
@@ -112,22 +107,12 @@ export class CartController {
                 const newQuantity = existingItem.quantity - qty;
 
                 if (newQuantity <= 0) {
-                    await prisma.cartProduct.delete({
-                        where: {
-                            cartId_productId: {
-                                cartId: cart.id,
-                                productId
-                            }
-                        }
+                    await prisma.cartItem.delete({
+                        where: { id: existingItem.id }
                     });
                 } else {
-                    await prisma.cartProduct.update({
-                        where: {
-                            cartId_productId: {
-                                cartId: cart.id,
-                                productId
-                            }
-                        },
+                    await prisma.cartItem.update({
+                        where: { id: existingItem.id },
                         data: { quantity: newQuantity }
                     });
                 }
@@ -165,7 +150,7 @@ export class CartController {
                 return res.status(404).json({ message: "Carrinho não encontrado" });
             }
 
-            await prisma.cartProduct.deleteMany({
+            await prisma.cartItem.deleteMany({
                 where: { cartId: cart.id }
             });
 
