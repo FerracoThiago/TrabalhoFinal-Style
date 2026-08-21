@@ -1,16 +1,62 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Lock } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+
 import { Logo } from '../components/Logo';
 import { Input } from '../components/Input';
 import { SubmitButton } from '../components/SubmitButton';
+
 import googleIcon from '../assets/icons/google.svg';
 import facebookIcon from '../assets/icons/facebook.svg';
 
 export const Login: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:3333/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+
+        localStorage.setItem('token', data.token);
+
+        navigate('/');
+        return;
+      }
+
+      if (response.status === 401) {
+        setError('Email ou senha inválidos.');
+        return;
+      }
+
+      setError('Não foi possível realizar o login.');
+    } catch {
+      setError('Erro ao conectar com o servidor.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-start py-8 px-4">
       <div className="flex flex-col items-center mb-8">
         <Logo className="h-8 mb-3" />
+
         <p className="text-sm text-gray-500 font-normal text-center">
           Welcome back! Please enter your details
         </p>
@@ -21,6 +67,7 @@ export const Login: React.FC = () => {
           <h1 className="text-2xl font-bold text-black mb-1">
             Sign In
           </h1>
+
           <p className="text-sm text-gray-500">
             Access your account to continue shopping
           </p>
@@ -46,36 +93,53 @@ export const Login: React.FC = () => {
 
         <div className="relative flex items-center justify-center mb-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
+            <div className="w-full border-t border-gray-200" />
           </div>
+
           <div className="relative bg-white px-4 text-[11px] font-medium tracking-wider text-gray-400 uppercase">
             OR SIGN IN WITH EMAIL
           </div>
         </div>
 
-        <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-          <Input 
-            label="Email address" 
-            type="email" 
-            placeholder="Enter your email" 
-            icon={<Mail className="w-4 h-4" />} 
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Email address"
+            type="email"
+            placeholder="Enter your email"
+            icon={<Mail className="w-4 h-4" />}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
-          <Input 
-            label="Password" 
-            isPassword={true} 
-            placeholder="Enter your password" 
-            icon={<Lock className="w-4 h-4" />} 
+          <Input
+            label="Password"
+            isPassword={true}
+            placeholder="Enter your password"
+            icon={<Lock className="w-4 h-4" />}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
-          <SubmitButton>Sign In</SubmitButton>
+          {error && (
+            <p className="text-sm text-red-500 text-center">
+              {error}
+            </p>
+          )}
+
+          <SubmitButton>
+            Sign In
+          </SubmitButton>
         </form>
 
         <div className="mt-6 text-center text-xs text-black">
           Don't have an account?{' '}
-          <a href="/cadastro" className="font-semibold text-black underline">
-            Create account
-          </a>
+
+          <Link
+            to="/cadastro"
+            className="font-semibold text-black underline"
+          >
+            Sign UP
+          </Link>
         </div>
       </div>
     </div>
