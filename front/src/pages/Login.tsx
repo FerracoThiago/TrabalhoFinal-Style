@@ -53,23 +53,23 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-start py-8 px-4">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-start py-8 md:py-20 px-4">
       <div className="flex flex-col items-center mb-8">
         <Logo className="h-8 mb-3" />
 
-        <p className="text-sm text-gray-500 font-normal text-center">
+        <p className="text-md text-gray-500 font-normal text-center">
           Welcome back! Please enter your details
         </p>
       </div>
 
-      <div className="w-full max-w-120 bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 shadow-sm">
+      <div className="w-full max-w-120 bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-md">
         <div className="flex flex-col items-center mb-6 text-center">
           <h1 className="text-2xl font-bold text-black mb-1">
             Sign In
           </h1>
 
-          <p className="text-sm text-gray-500">
-            Access your account to continue shopping
+          <p className="text-md text-gray-500">
+            Enter your credentials to access your account
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export const Login: React.FC = () => {
           </div>
 
           <div className="relative bg-white px-4 text-[11px] font-medium tracking-wider text-gray-400 uppercase">
-            OR SIGN IN WITH EMAIL
+            OR CONTINUE IN WITH EMAIL
           </div>
         </div>
 
