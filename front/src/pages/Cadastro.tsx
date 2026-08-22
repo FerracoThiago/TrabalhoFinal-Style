@@ -194,7 +194,7 @@ export const Cadastro: React.FC = () => {
           </SubmitButton>
         </form>
 
-        <div className="mt-6 text-center text-xs text-black">
+        <div className="mt-6 text-center text-md text-black">
           Already have an account?{' '}
 
           <Link
