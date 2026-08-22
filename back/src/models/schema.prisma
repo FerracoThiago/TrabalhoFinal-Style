@@ -25,8 +25,8 @@ model User {
   gender        gender?
   hash          String  
   salt          String
-  notifications Int
-  profPicPath   String?
+  notifications Boolean
+  profPicFile   String?
 
   tags          Tags[]
   address       Address[]
@@ -66,7 +66,7 @@ model Cupom{
   order         Order[]
 }
 
-model Cart{
+model Cart {
   id          Int @id @default(autoincrement())
   total       Float
   subtotal    Float
@@ -77,8 +77,18 @@ model Cart{
   userId      Int  @unique
   user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  items       Product[]       //implicit n:n
+  items       CartItem[]
 }
+
+model CartItem {
+  id        Int @id @default(autoincrement())
+  cartId    Int
+  cart      Cart @relation(fields: [cartId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+}
+
 
 model Wishlist{
   id       Int @id @default(autoincrement())
@@ -130,7 +140,7 @@ model Product {
   inStock       Boolean
 
   variants      Variant[]
-  cartItems     Cart[]         //implicit n:n
+  cartItems     CartItem[]         //implicit n:n
   wishlists     Wishlist[]     //implicit n:n
   orderItems    OrderItem[]
   reviews       Review[]

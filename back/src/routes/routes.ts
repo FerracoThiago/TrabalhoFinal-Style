@@ -1,11 +1,11 @@
 import { Router } from "express";
+import { photoUpload } from "../config/uploads";
 import { AuthController } from "../controllers/AuthController";
-import { UserController } from "../controllers/UserController";
-import { authMiddleware } from "../middlewares/authMiddleware";
-import { validateRegister } from "../middlewares/validateMiddleware";
 import { CartController } from "../controllers/CartController";
+import { UserController } from "../controllers/UserController";
 import { VariantController } from "../controllers/VariantController";
-import { validateCreateVariant, validateUpdateVariant } from "../middlewares/validateMiddleware";
+import { authMiddleware } from "../middlewares/authMiddleware";
+import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
 
 const router = Router();
 
@@ -17,6 +17,7 @@ router.post("/auth/login", AuthController.login);
 router.get("/user",authMiddleware,UserController.readUser);
 router.get("/user/many",UserController.readAllUsers);
 router.put("/user",authMiddleware,UserController.updateUser);
+router.post("/user/profpic",authMiddleware,photoUpload.single('photo'),UserController.setProfPicUser);
 router.delete("/user",authMiddleware,UserController.deleteUser);
 
 /*CartController*/
