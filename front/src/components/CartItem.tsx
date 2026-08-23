@@ -142,11 +142,21 @@ export const CartItem: React.FC<CartItemProps> = ({
 
           <div className="flex items-center justify-between mt-3">
             <div className="flex items-center gap-3">
-              <div className="flex items-center border border-gray-200 rounded-lg px-2 py-1 gap-3 bg-gray-50">
+              <div 
+                className="flex items-center justify-between border border-gray-200 bg-white shadow-sm"
+                style={{
+                  width: '100px',
+                  height: '36px',
+                  paddingLeft: '12px',
+                  paddingRight: '12px',
+                  borderRadius: '8px',
+                }}
+              >
                 <button
                   type="button"
                   onClick={onDecrease}
-                  className="text-gray-600 hover:text-black font-semibold px-1"
+                  className="text-gray-700 hover:text-black font-normal flex items-center justify-center"
+                  style={{ fontSize: '16px', lineHeight: '1' }}
                 >
                   -
                 </button>
@@ -154,7 +164,8 @@ export const CartItem: React.FC<CartItemProps> = ({
                 <button
                   type="button"
                   onClick={onIncrease}
-                  className="text-gray-600 hover:text-black font-semibold px-1"
+                  className="text-gray-700 hover:text-black font-normal flex items-center justify-center"
+                  style={{ fontSize: '16px', lineHeight: '1' }}
                 >
                   +
                 </button>
@@ -187,11 +198,21 @@ export const CartItem: React.FC<CartItemProps> = ({
 
         <div className="flex md:hidden flex-col w-full gap-3 mt-1">
           <div className="flex items-center gap-3">
-            <div className="flex items-center border border-gray-200 rounded-lg px-2 py-1 gap-3 bg-gray-50 w-fit">
+            <div 
+              className="flex items-center justify-between border border-gray-200 bg-white shadow-sm"
+              style={{
+                width: '100px',
+                height: '36px',
+                paddingLeft: '12px',
+                paddingRight: '12px',
+                borderRadius: '8px',
+              }}
+            >
               <button
                 type="button"
                 onClick={onDecrease}
-                className="text-gray-600 hover:text-black font-semibold px-1"
+                className="text-gray-700 hover:text-black font-normal flex items-center justify-center"
+                style={{ fontSize: '16px', lineHeight: '1' }}
               >
                 -
               </button>
@@ -199,7 +220,8 @@ export const CartItem: React.FC<CartItemProps> = ({
               <button
                 type="button"
                 onClick={onIncrease}
-                className="text-gray-600 hover:text-black font-semibold px-1"
+                className="text-gray-700 hover:text-black font-normal flex items-center justify-center"
+                style={{ fontSize: '16px', lineHeight: '1' }}
               >
                 +
               </button>
