@@ -34,8 +34,8 @@ export const Cart: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Container Principal do Carrinho (O Header já deve estar renderizado no App.tsx ou Layout global) */}
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Container Principal do Carrinho */}
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
         
         {/* Título e Botão Voltar */}
@@ -59,11 +59,13 @@ export const Cart: React.FC = () => {
           </span>
         </div>
 
-        {/* Layout Grid Desktop */}
+        {/* Layout Grid Desktop / Mobile */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start w-full">
           
           {/* Coluna da Esquerda */}
           <div className="flex flex-col gap-6 md:col-span-2 w-full">
+            
+            {/* Bloco Available Items com a tipografia exata */}
             <div 
               className="bg-white border border-gray-100 shadow-sm flex flex-col w-full max-w-[358px] md:max-w-none mx-auto md:mx-0" 
               style={{ 
@@ -77,9 +79,20 @@ export const Cart: React.FC = () => {
                 boxSizing: 'border-box'
               }}
             >
-              <div className="flex items-center space-x-2 text-lg font-bold text-black px-1">
+              <div className="flex items-center space-x-2 px-1">
                 <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-                <span>Available Items (2)</span>
+                <span 
+                  className="text-black"
+                  style={{ 
+                    fontFamily: 'Segoe UI', 
+                    fontWeight: 600, 
+                    fontSize: '24px', 
+                    lineHeight: '24px', 
+                    letterSpacing: '-0.6px' 
+                  }}
+                >
+                  Available Items (2)
+                </span>
               </div>
 
               <div className="flex flex-col w-full" style={{ gap: '24px' }}>
@@ -117,6 +130,7 @@ export const Cart: React.FC = () => {
               </div>
             </div>
 
+            {/* Bloco Out of Stock */}
             <div className="w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
               <OutOfStockItem
                 image={summerDressImage}
@@ -127,6 +141,7 @@ export const Cart: React.FC = () => {
                 color="Floral"
               />
             </div>
+
           </div>
 
           {/* Coluna da Direita */}

@@ -1,37 +1,53 @@
-import React from 'react';
-import { Tag } from 'lucide-react';
-import { Input } from './Input';
+import React, { useState } from 'react';
 
-export const PromoCode: React.FC = () => {
+interface PromoCodeProps {
+  onApply?: (code: string) => void;
+}
+
+export const PromoCode: React.FC<PromoCodeProps> = ({ onApply }) => {
+  const [code, setCode] = useState('');
+
+  const handleApply = () => {
+    if (onApply && code.trim()) {
+      onApply(code);
+    }
+  };
+
   return (
-    <div 
-      className="bg-white border border-gray-100 shadow-sm flex flex-col mx-auto w-[358px]" 
-      style={{ borderRadius: '12px', borderWidth: '1px', padding: '25px', gap: '12px' }}
-    >
-      <div className="flex items-center space-x-2 text-lg font-bold text-black">
-        <Tag className="w-6 h-6 text-gray-700" strokeWidth={2.5} />
-        <span className="text-black font-extrabold text-lg">Promo Code</span>
-      </div>
+    <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 flex flex-col w-full" style={{ gap: '16px' }}>
+      <h2 
+        className="text-black"
+        style={{ 
+          fontFamily: 'Segoe UI', 
+          fontWeight: 600, 
+          fontSize: '24px', 
+          lineHeight: '24px', 
+          letterSpacing: '-0.6px' 
+        }}
+      >
+        Promo Code
+      </h2>
 
-      <div className="flex space-x-2">
-        <div className="flex-1">
-          <Input
-            placeholder="Enter promo code"
-            value=""
-            onChange={() => {}}
-          />
-        </div>
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          placeholder="Enter promo code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-black placeholder-gray-400 focus:outline-none focus:border-black transition-colors"
+        />
         <button
           type="button"
-          className="bg-gray-500 hover:bg-gray-600 text-white text-xs font-semibold px-5 rounded-xl transition-colors h-11"
+          onClick={handleApply}
+          className="bg-gray-800 text-white font-medium px-4 py-2 rounded-lg hover:bg-black transition-colors text-sm shrink-0"
         >
           Apply
         </button>
       </div>
 
-      <p className="text-[11px] text-gray-400">
-        Try: SAVE10, WELCOME20, STUDENT15
-      </p>
+      <div className="text-xs text-gray-500">
+        Try: <span className="font-semibold text-gray-700">SAVE10</span>, <span className="font-semibold text-gray-700">VIPCOMP30</span>, <span className="font-semibold text-gray-700">STUDENT15</span>
+      </div>
     </div>
   );
 };

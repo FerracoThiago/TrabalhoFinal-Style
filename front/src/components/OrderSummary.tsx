@@ -1,5 +1,4 @@
 import React from 'react';
-import { SubmitButton } from './SubmitButton';
 
 interface OrderSummaryProps {
   onCheckout: () => void;
@@ -11,58 +10,63 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   onContinueShopping,
 }) => {
   return (
-    <div 
-      className="bg-white border border-gray-100 shadow-sm flex flex-col mx-auto w-[358px]" 
-      style={{ borderRadius: '12px', borderWidth: '1px', padding: '25px', gap: '16px' }}
-    >
-      <h2 className="text-lg font-bold text-black">Order Summary</h2>
+    <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 flex flex-col w-full" style={{ gap: '20px' }}>
+      <h2 
+        className="text-black"
+        style={{ 
+          fontFamily: 'Segoe UI', 
+          fontWeight: 600, 
+          fontSize: '24px', 
+          lineHeight: '24px', 
+          letterSpacing: '-0.6px' 
+        }}
+      >
+        Order Summary
+      </h2>
 
-      <div className="space-y-2 text-xs text-gray-600">
-        <div className="flex justify-between">
+      <div className="flex flex-col gap-3 text-sm">
+        <div className="flex justify-between text-gray-600">
           <span>Subtotal (2 items)</span>
           <span className="font-semibold text-black">$186.00</span>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between text-red-600">
           <span>Savings</span>
-          <span className="font-semibold text-emerald-600">-$121.00</span>
+          <span className="font-semibold">-$121.00</span>
         </div>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <span>Shipping</span>
-            <span className="bg-gray-100 text-gray-600 text-[10px] font-medium px-2 py-0.5 rounded-md">
-              Free
-            </span>
-          </div>
-          <span className="font-semibold text-black">$0.00</span>
+        <div className="flex justify-between text-gray-600 items-center">
+          <span>Shipping</span>
+          <span className="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded font-medium">Free</span>
         </div>
       </div>
 
-      <div className="border-t border-gray-100 pt-3 flex justify-between items-center text-sm">
-        <span className="font-bold text-black">Total</span>
-        <span className="font-bold text-black text-base">$186.00</span>
+      <hr className="border-gray-100" />
+
+      <div className="flex justify-between text-base font-bold text-black">
+        <span>Total</span>
+        <span>$186.00</span>
       </div>
 
-      <div className="space-y-3 pt-2">
-        <SubmitButton onClick={onCheckout}>
+      <div className="flex flex-col gap-3 pt-2">
+        <button
+          type="button"
+          onClick={onCheckout}
+          className="w-full bg-black text-white font-medium py-3 rounded-lg hover:bg-gray-800 transition-colors text-sm"
+        >
           Proceed to Checkout
-        </SubmitButton>
+        </button>
 
         <button
           type="button"
           onClick={onContinueShopping}
-          className="w-full h-12 border border-gray-300 rounded-xl text-sm font-medium text-black bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
+          className="w-full bg-white border border-gray-200 text-black font-medium py-3 rounded-lg hover:bg-gray-50 transition-colors text-sm"
         >
           Continue Shopping
         </button>
       </div>
 
-      <div className="text-center pt-2 space-y-1">
-        <p className="text-[11px] text-gray-400">
-          Secure checkout with SSL encryption
-        </p>
-        <p className="text-[11px] text-gray-400">
-          30-day return policy · Free returns
-        </p>
+      <div className="text-center text-[10px] text-gray-400 mt-1 flex flex-col gap-0.5">
+        <span>Secure checkout with SSL encryption</span>
+        <span>30-day return policy · Free returns</span>
       </div>
     </div>
   );
