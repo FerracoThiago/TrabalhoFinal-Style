@@ -67,7 +67,20 @@ export const CartItem: React.FC<CartItemProps> = ({
                   <span className="text-base font-bold text-black">{price}</span>
                   <span className="text-xs text-gray-400 line-through">{oldPrice}</span>
                 </div>
-                <span className="text-[11px] font-bold text-white bg-red-600 px-2 py-0.5 rounded-md mt-1 inline-block text-center whitespace-nowrap">
+                <span 
+                  className="font-bold text-white bg-red-600 inline-flex items-center justify-center mt-1"
+                  style={{
+                    width: '71px',
+                    height: '22px',
+                    paddingTop: '3px',
+                    paddingRight: '11px',
+                    paddingBottom: '3px',
+                    paddingLeft: '11px',
+                    borderRadius: '9999px',
+                    fontSize: '11px',
+                    lineHeight: '16px',
+                  }}
+                >
                   Save {savings}
                 </span>
               </div>
@@ -98,9 +111,27 @@ export const CartItem: React.FC<CartItemProps> = ({
               <p className="text-xs text-gray-500">{style}</p>
             </div>
             
-            <div className="text-right">
-              <span className="text-base font-bold text-black">{price}</span>
-              <span className="text-xs text-gray-400 line-through ml-1.5">{oldPrice}</span>
+            <div className="text-right flex flex-col items-end">
+              <div>
+                <span className="text-base font-bold text-black">{price}</span>
+                <span className="text-xs text-gray-400 line-through ml-1.5">{oldPrice}</span>
+              </div>
+              <span 
+                className="font-bold text-white bg-red-600 inline-flex items-center justify-center mt-1"
+                style={{
+                  width: '71px',
+                  height: '22px',
+                  paddingTop: '3px',
+                  paddingRight: '11px',
+                  paddingBottom: '3px',
+                  paddingLeft: '11px',
+                  borderRadius: '9999px',
+                  fontSize: '11px',
+                  lineHeight: '16px',
+                }}
+              >
+                Save {savings}
+              </span>
             </div>
           </div>
 
@@ -109,43 +140,37 @@ export const CartItem: React.FC<CartItemProps> = ({
             <span>Color: <strong className="text-black">{color}</strong></span>
           </div>
 
-          <div className="flex flex-col gap-3 mt-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center border border-gray-200 rounded-lg px-2 py-1 gap-3 bg-gray-50">
-                  <button
-                    type="button"
-                    onClick={onDecrease}
-                    className="text-gray-600 hover:text-black font-semibold px-1"
-                  >
-                    -
-                  </button>
-                  <span className="text-xs font-semibold text-black">{quantity}</span>
-                  <button
-                    type="button"
-                    onClick={onIncrease}
-                    className="text-gray-600 hover:text-black font-semibold px-1"
-                  >
-                    +
-                  </button>
-                </div>
-                <span className="text-[10px] text-gray-400 leading-tight">
-                  Max<br />{maxQuantity}
-                </span>
+          <div className="flex items-center justify-between mt-3">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center border border-gray-200 rounded-lg px-2 py-1 gap-3 bg-gray-50">
+                <button
+                  type="button"
+                  onClick={onDecrease}
+                  className="text-gray-600 hover:text-black font-semibold px-1"
+                >
+                  -
+                </button>
+                <span className="text-xs font-semibold text-black">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={onIncrease}
+                  className="text-gray-600 hover:text-black font-semibold px-1"
+                >
+                  +
+                </button>
               </div>
-
-              <span className="text-xs font-bold text-white bg-red-600 px-2 py-1 rounded-md">
-                Save {savings}
+              <span className="text-[10px] text-gray-400 leading-tight">
+                Max<br />{maxQuantity}
               </span>
             </div>
 
-            <div className="flex items-center gap-6 text-xs text-black font-medium">
+            <div className="flex items-center gap-5 text-xs text-black font-medium">
               <button 
                 type="button" 
                 onClick={onSaveForLater}
                 className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
               >
-                <Heart className="w-4 h-4 text-black" />
+                <Heart className="w-4 h-4 text-black fill-none stroke-[2]" />
                 <span>Save for Later</span>
               </button>
               <button 
@@ -153,7 +178,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                 onClick={onRemove}
                 className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
               >
-                <Trash2 className="w-4 h-4 text-black" />
+                <Trash2 className="w-4 h-4 text-black stroke-[2]" />
                 <span>Remove</span>
               </button>
             </div>
@@ -184,13 +209,13 @@ export const CartItem: React.FC<CartItemProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-6 text-xs text-black font-medium pt-1">
+          <div className="flex items-center gap-5 text-xs text-black font-medium pt-1">
             <button 
               type="button" 
               onClick={onSaveForLater}
               className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
             >
-              <Heart className="w-4 h-4 text-black" />
+              <Heart className="w-4 h-4 text-black fill-none stroke-[2]" />
               <span>Save for Later</span>
             </button>
             <button 
@@ -198,7 +223,7 @@ export const CartItem: React.FC<CartItemProps> = ({
               onClick={onRemove}
               className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
             >
-              <Trash2 className="w-4 h-4 text-black" />
+              <Trash2 className="w-4 h-4 text-black stroke-[2]" />
               <span>Remove</span>
             </button>
           </div>
