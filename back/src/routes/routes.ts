@@ -35,9 +35,10 @@ router.put("/variant/:id", authMiddleware, validateUpdateVariant, VariantControl
 router.delete("/variant/:id", authMiddleware, VariantController.deleteVariant);
 
 /*Product Controller*/
-router.post("/product", validateCreateProduct, ProductController.createProduct);
+router.post("/product", photoUpload.array("photos", 5), validateCreateProduct, ProductController.createProduct);
 router.get("/product/:id", ProductController.readProduct);
 router.get("/product", ProductController.readAllProducts);
 router.put("/product/:id", validateUpdateProduct, ProductController.updateProduct);
 router.delete("/product/:id", ProductController.deleteProduct);
+
 export default router;

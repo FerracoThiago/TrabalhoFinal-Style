@@ -5,7 +5,7 @@ export class ProductController {
 
     public static async createProduct(req: Request, res: Response) {
         try {
-            const photo = req.file;
+            const photoPaths = (req.files as Express.Multer.File[]).slice(0, 5);
             const { name, description, price, specification, tags, category, inStock, variants } = req.body;
 
             const createdProduct = await prisma.product.create({
@@ -17,16 +17,16 @@ export class ProductController {
                     tags,
                     category,
                     inStock,
-                    variants: {
-                        create: {
-                            size: variants.size,
-                            color: variants.color,
-                            stock: variants.stock,
-                        }
+                    images: { // necessário para criar várias imagens associadas ao produto
+                        create: photoPaths.map((file: any) => ({
+                            fileName: file.path
+                        }))
                     },
-                    profPicFile: photo ? photo.path : null,
+                    variants: {
+                        create: variants
+                    }
                 },
-                include: { variants: true }
+                include: { variants: true, images: true }
             });
 
             return res.status(201).json(createdProduct);
@@ -39,7 +39,10 @@ export class ProductController {
     public static async readProduct(req: Request, res: Response) {
         try {
             const productId = Number(req.params.id);
-            const foundProduct = await prisma.product.findUnique({ where: { id: productId } });
+            const foundProduct = await prisma.product.findUnique({
+                where: { id: productId },
+                include: { variants: true, images: true }
+            });
 
             if (!foundProduct) {
                 return res.status(404).json({ message: "Produto não encontrado" });
@@ -53,7 +56,9 @@ export class ProductController {
 
     public static async readAllProducts(req: Request, res: Response) {
         try {
-            const products = await prisma.product.findMany();
+            const products = await prisma.product.findMany({
+                include: { variants: true, images: true }
+            });
             return res.status(200).json(products);
         }
         catch (e: any) {
@@ -64,7 +69,7 @@ export class ProductController {
     public static async updateProduct(req: Request, res: Response) {
         try {
             const productId = Number(req.params.id);
-            const { name, description, price, specification, tags, category, inStock } = req.body;
+            const { name, description, price, specification, tags, category, inStock, variants } = req.body;
 
             await prisma.product.update({
                 where: { id: productId },
@@ -75,9 +80,14 @@ export class ProductController {
                     specification,
                     tags,
                     category,
-                    inStock
-                }
+                    inStock,
+                    variants: {
+                        create: variants
+                    }
+                },
+                include: { variants: true, images: true }
             });
+
             return res.status(200).json({ message: "Produto atualizado com sucesso" });
         }
         catch (e: any) {

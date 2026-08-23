@@ -9,6 +9,13 @@ export const CreateProductSchema = z.object({
     specification: z.string().min(1, "Especificação é obrigatória"),
     category: z.string().min(1, "Categoria é obrigatória"),
     inStock: z.boolean(),
+    variants: z.array(  // validação para pelo menos uma variante
+        z.object({
+            size: z.string().optional(),
+            color: z.string().optional(),
+            stock: z.number().int().positive("Estoque deve ser maior que 0"),
+        })
+    ).min(1, "O produto deve ter pelo menos uma variante"),
 });
 
 export const UpdateProductSchema = z.object({
@@ -20,4 +27,11 @@ export const UpdateProductSchema = z.object({
     specification: z.string().min(1).optional(),
     category: z.string().min(1).optional(),
     inStock: z.boolean().optional(),
+    variants: z.array( // validação para variantes opcionais
+        z.object({
+            size: z.string().optional(),
+            color: z.string().optional(),
+            stock: z.number().int().positive().optional(),
+        })
+    ).optional(),
 });
