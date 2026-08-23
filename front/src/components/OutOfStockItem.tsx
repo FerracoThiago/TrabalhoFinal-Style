@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, Heart, Trash2 } from 'lucide-react';
+import { Heart, Trash2, AlertCircle } from 'lucide-react';
 
 interface OutOfStockItemProps {
   image: string;
@@ -8,6 +8,9 @@ interface OutOfStockItemProps {
   price: string;
   size: string;
   color: string;
+  onNotify?: () => void;
+  onSaveForLater?: () => void;
+  onRemove?: () => void;
 }
 
 export const OutOfStockItem: React.FC<OutOfStockItemProps> = ({
@@ -17,64 +20,146 @@ export const OutOfStockItem: React.FC<OutOfStockItemProps> = ({
   price,
   size,
   color,
+  onNotify,
+  onSaveForLater,
+  onRemove,
 }) => {
   return (
-    <div 
-      className="bg-white border border-red-100 shadow-sm flex flex-col mx-auto w-[358px]" 
-      style={{ borderRadius: '12px', borderWidth: '1px', padding: '25px', gap: '16px' }}
-    >
-      <div className="flex items-center space-x-2 text-red-600">
-        <AlertCircle className="w-6 h-6" />
-        <span style={{ fontFamily: 'Segoe UI', fontWeight: 600, fontSize: '24px', lineHeight: '24px', letterSpacing: '-0.6px' }}>
+    <div className="bg-white border border-red-100 shadow-sm rounded-xl p-5 flex flex-col w-full" style={{ gap: '20px' }}>
+      <div className="flex items-center space-x-2">
+        <AlertCircle className="w-4 h-4 text-red-500" />
+        <span 
+          className="text-black"
+          style={{ 
+            fontFamily: 'Segoe UI', 
+            fontWeight: 600, 
+            fontSize: '24px', 
+            lineHeight: '24px', 
+            letterSpacing: '-0.6px' 
+          }}
+        >
           Out of Stock (1)
         </span>
       </div>
 
-      <div className="flex space-x-3 items-start">
-        <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 relative">
-          <img src={image} alt={name} className="w-full h-full object-cover opacity-60 absolute inset-0" />
-          <div className="absolute inset-0 flex items-center justify-center p-1 z-10">
-            <span className="bg-red-500 text-white text-[9px] font-semibold px-2 py-0.5 rounded-md shadow-sm">
-              Out of Stock
-            </span>
+      <div className="flex flex-col w-full">
+        <div className="flex flex-col md:flex-row gap-4 items-start w-full">
+          <div className="flex gap-4 w-full md:w-auto">
+            <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+              <img src={image} alt={name} className="w-full h-full object-cover opacity-60" />
+            </div>
+
+            <div className="flex-1 flex md:hidden flex-col justify-between">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 
+                    className="text-black"
+                    style={{ 
+                      fontFamily: 'Segoe UI', 
+                      fontWeight: 600, 
+                      fontSize: '18px', 
+                      lineHeight: '28px', 
+                      letterSpacing: '0%' 
+                    }}
+                  >
+                    {name}
+                  </h3>
+                  <p className="text-xs text-gray-500">{style}</p>
+                </div>
+                <span className="text-base font-bold text-black">{price}</span>
+              </div>
+
+              <div className="flex items-center gap-4 mt-2 text-xs text-gray-600">
+                <span>Size: <strong className="text-black">{size}</strong></span>
+                <span>Color: <strong className="text-black">{color}</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden md:flex flex-1 flex-col justify-between">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 
+                  className="text-black"
+                  style={{ 
+                    fontFamily: 'Segoe UI', 
+                    fontWeight: 600, 
+                    fontSize: '18px', 
+                    lineHeight: '28px', 
+                    letterSpacing: '0%' 
+                  }}
+                >
+                  {name}
+                </h3>
+                <p className="text-xs text-gray-500">{style}</p>
+              </div>
+              <span className="text-base font-bold text-black">{price}</span>
+            </div>
+
+            <div className="flex items-center gap-4 mt-2 text-xs text-gray-600">
+              <span>Size: <strong className="text-black">{size}</strong></span>
+              <span>Color: <strong className="text-black">{color}</strong></span>
+            </div>
+
+            <div className="flex items-center justify-between mt-3">
+              <button
+                type="button"
+                onClick={onNotify}
+                className="bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors border border-gray-200"
+              >
+                Notify When Available
+              </button>
+
+              <div className="flex items-center gap-6 text-xs text-black font-medium">
+                <button 
+                  type="button" 
+                  onClick={onSaveForLater}
+                  className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
+                >
+                  <Heart className="w-4 h-4 text-black" />
+                  <span>Save for Later</span>
+                </button>
+                <button 
+                  type="button" 
+                  onClick={onRemove}
+                  className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
+                >
+                  <Trash2 className="w-4 h-4 text-black" />
+                  <span>Remove</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex md:hidden flex-col w-full gap-3 mt-1">
+            <button
+              type="button"
+              onClick={onNotify}
+              className="bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors border border-gray-200 w-fit"
+            >
+              Notify When Available
+            </button>
+
+            <div className="flex items-center gap-6 text-xs text-black font-medium pt-1">
+              <button 
+                type="button" 
+                onClick={onSaveForLater}
+                className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
+              >
+                <Heart className="w-4 h-4 text-black" />
+                <span>Save for Later</span>
+              </button>
+              <button 
+                type="button" 
+                onClick={onRemove}
+                className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
+              >
+                <Trash2 className="w-4 h-4 text-black" />
+                <span>Remove</span>
+              </button>
+            </div>
           </div>
         </div>
-
-        <div className="flex-1 flex justify-between items-start">
-          <div className="flex flex-col">
-            <h3 className="text-gray-800" style={{ fontFamily: 'Segoe UI', fontWeight: 600, fontSize: '18px', lineHeight: '28px' }}>
-              {name}
-            </h3>
-            <p className="text-xs text-gray-400">{style}</p>
-          </div>
-          <span className="text-sm font-bold text-gray-800">{price}</span>
-        </div>
-      </div>
-
-      <div>
-        <button
-          type="button"
-          className="border border-gray-200 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          Notify When Available
-        </button>
-      </div>
-
-      <div className="flex justify-between items-center pt-2 border-t border-gray-100">
-        <div className="flex items-center space-x-4 text-xs font-medium text-black">
-          <button type="button" className="flex items-center space-x-1.5 hover:opacity-75">
-            <Heart className="w-4 h-4" />
-            <span>Save for Later</span>
-          </button>
-          <button type="button" className="flex items-center space-x-1.5 hover:opacity-75">
-            <Trash2 className="w-4 h-4" />
-            <span>Remove</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="text-xs text-gray-400">
-        Size: {size} &nbsp;·&nbsp; Color: {color}
       </div>
     </div>
   );
