@@ -29,7 +29,9 @@ export const Cadastro: React.FC = () => {
     setError('');
 
     if (!termsAccepted) {
-      setError('Você precisa aceitar os Termos de Serviço e a Política de Privacidade.');
+      setError(
+        'Você precisa aceitar os Termos de Serviço e a Política de Privacidade.'
+      );
       return;
     }
 
@@ -38,20 +40,35 @@ export const Cadastro: React.FC = () => {
       return;
     }
 
+    if (password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
+    // Garantimos explicitamente que seja boolean
+    const notifications = Boolean(newsletterAccepted);
+
+    const data = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      password,
+      notifications,
+    };
+
+    console.log('Dados enviados para o cadastro:', data);
+    console.log('notifications é boolean?', typeof data.notifications);
+
     try {
       const response = await fetch('http://localhost:3333/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-          notifications: newsletterAccepted ? 1 : 0,
-        }),
+        body: JSON.stringify(data),
       });
+
+      const responseData = await response.json().catch(() => null);
 
       if (response.status === 201) {
         navigate('/login');
@@ -63,8 +80,21 @@ export const Cadastro: React.FC = () => {
         return;
       }
 
-      setError('Não foi possível realizar o cadastro.');
-    } catch {
+      if (response.status === 400) {
+        console.error('Erro de validação:', responseData);
+        setError(
+          responseData?.errors?.[0]?.message ||
+            'Os dados enviados são inválidos.'
+        );
+        return;
+      }
+
+      console.error('Erro no cadastro:', responseData);
+      setError(
+        responseData?.message || 'Não foi possível realizar o cadastro.'
+      );
+    } catch (error) {
+      console.error('Erro ao conectar com o servidor:', error);
       setError('Erro ao conectar com o servidor.');
     }
   };
@@ -156,7 +186,7 @@ export const Cadastro: React.FC = () => {
             />
 
             <p className="text-[11px] text-gray-500 mt-1">
-              Must be at least 8 characters long
+              Must be at least 6 characters long
             </p>
           </div>
 
@@ -196,7 +226,6 @@ export const Cadastro: React.FC = () => {
 
         <div className="mt-6 text-center text-md text-black">
           Already have an account?{' '}
-
           <Link
             to="/login"
             className="font-semibold text-black underline"
