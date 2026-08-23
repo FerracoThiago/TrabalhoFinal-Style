@@ -1,5 +1,5 @@
 import React from 'react';
-import {Heart, Trash2 } from 'lucide-react';
+import { Heart, Trash2 } from 'lucide-react';
 
 interface CartItemProps {
   image: string;
@@ -109,8 +109,60 @@ export const CartItem: React.FC<CartItemProps> = ({
             <span>Color: <strong className="text-black">{color}</strong></span>
           </div>
 
-          <div className="flex items-center justify-between mt-3">
-            <div className="flex items-center border border-gray-200 rounded-lg px-2 py-1 gap-3 bg-gray-50">
+          <div className="flex flex-col gap-3 mt-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center border border-gray-200 rounded-lg px-2 py-1 gap-3 bg-gray-50">
+                  <button
+                    type="button"
+                    onClick={onDecrease}
+                    className="text-gray-600 hover:text-black font-semibold px-1"
+                  >
+                    -
+                  </button>
+                  <span className="text-xs font-semibold text-black">{quantity}</span>
+                  <button
+                    type="button"
+                    onClick={onIncrease}
+                    className="text-gray-600 hover:text-black font-semibold px-1"
+                  >
+                    +
+                  </button>
+                </div>
+                <span className="text-[10px] text-gray-400 leading-tight">
+                  Max<br />{maxQuantity}
+                </span>
+              </div>
+
+              <span className="text-xs font-bold text-white bg-red-600 px-2 py-1 rounded-md">
+                Save {savings}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-6 text-xs text-black font-medium">
+              <button 
+                type="button" 
+                onClick={onSaveForLater}
+                className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
+              >
+                <Heart className="w-4 h-4 text-black" />
+                <span>Save for Later</span>
+              </button>
+              <button 
+                type="button" 
+                onClick={onRemove}
+                className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
+              >
+                <Trash2 className="w-4 h-4 text-black" />
+                <span>Remove</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex md:hidden flex-col w-full gap-3 mt-1">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center border border-gray-200 rounded-lg px-2 py-1 gap-3 bg-gray-50 w-fit">
               <button
                 type="button"
                 onClick={onDecrease}
@@ -126,69 +178,27 @@ export const CartItem: React.FC<CartItemProps> = ({
               >
                 +
               </button>
-              <span className="text-[10px] text-gray-400 pl-1 border-l border-gray-200">Max {maxQuantity}</span>
             </div>
-
-            <div className="flex items-center gap-4 text-xs text-gray-600 font-medium">
-              <button 
-                type="button" 
-                onClick={onSaveForLater}
-                className="flex items-center gap-1 hover:text-black transition-colors"
-              >
-                <Heart className="w-4 h-4" />
-                <span>Save for Later</span>
-              </button>
-              <button 
-                type="button" 
-                onClick={onRemove}
-                className="flex items-center gap-1 hover:text-red-600 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span>Remove</span>
-              </button>
-            </div>
-
-            <span className="text-xs font-bold text-white bg-red-600 px-2 py-1 rounded-md">
-              Save {savings}
+            <span className="text-[10px] text-gray-400 leading-tight">
+              Max<br />{maxQuantity}
             </span>
           </div>
-        </div>
 
-        <div className="flex md:hidden flex-col w-full gap-3 mt-1">
-          <div className="flex items-center border border-gray-200 rounded-lg px-2 py-1 gap-3 bg-gray-50 w-fit">
-            <button
-              type="button"
-              onClick={onDecrease}
-              className="text-gray-600 hover:text-black font-semibold px-1"
-            >
-              -
-            </button>
-            <span className="text-xs font-semibold text-black">{quantity}</span>
-            <button
-              type="button"
-              onClick={onIncrease}
-              className="text-gray-600 hover:text-black font-semibold px-1"
-            >
-              +
-            </button>
-            <span className="text-[10px] text-gray-400 pl-1 border-l border-gray-200">Max {maxQuantity}</span>
-          </div>
-
-          <div className="flex items-center gap-4 text-xs text-gray-600 font-medium pt-1">
+          <div className="flex items-center gap-6 text-xs text-black font-medium pt-1">
             <button 
               type="button" 
               onClick={onSaveForLater}
-              className="flex items-center gap-1 hover:text-black transition-colors"
+              className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
             >
-              <Heart className="w-4 h-4" />
+              <Heart className="w-4 h-4 text-black" />
               <span>Save for Later</span>
             </button>
             <button 
               type="button" 
               onClick={onRemove}
-              className="flex items-center gap-1 hover:text-red-600 transition-colors"
+              className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-4 h-4 text-black" />
               <span>Remove</span>
             </button>
           </div>
