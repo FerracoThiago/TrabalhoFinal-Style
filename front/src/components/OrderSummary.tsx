@@ -1,16 +1,37 @@
 import React from 'react';
+import { Button } from './Button';
 
 interface OrderSummaryProps {
-  onCheckout: () => void;
-  onContinueShopping: () => void;
+  subtotalItems?: number;
+  subtotal?: string;
+  savings?: string;
+  shipping?: string;
+  total?: string;
+  onCheckout?: () => void;
+  onContinueShopping?: () => void;
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
+  subtotalItems = 2,
+  subtotal = '$186.00',
+  savings = '-$121.00',
+  shipping = '$0.00',
+  total = '$186.00',
   onCheckout,
   onContinueShopping,
 }) => {
   return (
-    <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 flex flex-col w-full" style={{ gap: '20px' }}>
+    <div 
+      className="bg-white border border-gray-100 shadow-sm rounded-xl flex flex-col w-full"
+      style={{
+        maxWidth: '434.66px',
+        paddingTop: '25px',
+        paddingRight: '20px',
+        paddingBottom: '25px',
+        paddingLeft: '20px',
+        gap: '24px'
+      }}
+    >
       <h2 
         className="text-black"
         style={{ 
@@ -24,49 +45,61 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         Order Summary
       </h2>
 
-      <div className="flex flex-col gap-3 text-sm">
-        <div className="flex justify-between text-gray-600">
-          <span>Subtotal (2 items)</span>
-          <span className="font-semibold text-black">$186.00</span>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-gray-600">Subtotal ({subtotalItems} items)</span>
+          <span className="font-semibold text-black">{subtotal}</span>
         </div>
-        <div className="flex justify-between text-red-600">
-          <span>Savings</span>
-          <span className="font-semibold">-$121.00</span>
+
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-red-500">Savings</span>
+          <span className="font-semibold text-red-500">{savings}</span>
         </div>
-        <div className="flex justify-between text-gray-600 items-center">
-          <span>Shipping</span>
-          <span className="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded font-medium">Free</span>
+
+        <div className="flex justify-between items-center text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-600">Shipping</span>
+            <span className="bg-gray-100 text-black text-[10px] font-semibold px-2 py-0.5 rounded">
+              Free
+            </span>
+          </div>
+          <span className="font-semibold text-black">{shipping}</span>
         </div>
       </div>
 
-      <hr className="border-gray-100" />
+      <div className="border-t border-gray-100" />
 
-      <div className="flex justify-between text-base font-bold text-black">
-        <span>Total</span>
-        <span>$186.00</span>
+      <div className="flex justify-between items-center">
+        <span className="font-bold text-black text-base">Total</span>
+        <span className="font-bold text-black text-base">{total}</span>
       </div>
 
-      <div className="flex flex-col gap-3 pt-2">
-        <button
-          type="button"
+      <div className="flex flex-col gap-3 mt-2">
+        <Button 
+          variant="primary" 
+          fullWidth 
           onClick={onCheckout}
-          className="w-full bg-black text-white font-medium py-3 rounded-lg hover:bg-gray-800 transition-colors text-sm"
+          className="h-12"
         >
           Proceed to Checkout
-        </button>
-
-        <button
-          type="button"
+        </Button>
+        <Button 
+          variant="outline" 
+          fullWidth 
           onClick={onContinueShopping}
-          className="w-full bg-white border border-gray-200 text-black font-medium py-3 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+          className="h-12"
         >
           Continue Shopping
-        </button>
+        </Button>
       </div>
 
-      <div className="text-center text-[10px] text-gray-400 mt-1 flex flex-col gap-0.5">
-        <span>Secure checkout with SSL encryption</span>
-        <span>30-day return policy · Free returns</span>
+      <div className="text-center flex flex-col gap-1 mt-2">
+        <p className="text-[10px] text-gray-400">
+          Secure checkout with SSL encryption
+        </p>
+        <p className="text-[10px] text-gray-400">
+          30-day return policy - Free returns
+        </p>
       </div>
     </div>
   );
