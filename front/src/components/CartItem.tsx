@@ -146,7 +146,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                 className="flex items-center justify-between border border-gray-200 bg-white shadow-sm"
                 style={{
                   width: '100px',
-                  height: '36px',
+                  height: '34px',
                   paddingLeft: '12px',
                   paddingRight: '12px',
                   borderRadius: '8px',
@@ -155,17 +155,22 @@ export const CartItem: React.FC<CartItemProps> = ({
                 <button
                   type="button"
                   onClick={onDecrease}
-                  className="text-gray-700 hover:text-black font-normal flex items-center justify-center"
-                  style={{ fontSize: '16px', lineHeight: '1' }}
+                  className="text-gray-700 hover:text-black font-semibold flex items-center justify-center select-none"
+                  style={{ fontSize: '15px', lineHeight: '1', width: '16px', height: '16px' }}
                 >
-                  -
+                  −
                 </button>
-                <span className="text-xs font-semibold text-black">{quantity}</span>
+                <span 
+                  className="font-semibold text-black text-center flex-1 select-none"
+                  style={{ fontSize: '13px', lineHeight: '1' }}
+                >
+                  {quantity}
+                </span>
                 <button
                   type="button"
                   onClick={onIncrease}
-                  className="text-gray-700 hover:text-black font-normal flex items-center justify-center"
-                  style={{ fontSize: '16px', lineHeight: '1' }}
+                  className="text-gray-700 hover:text-black font-semibold flex items-center justify-center select-none"
+                  style={{ fontSize: '15px', lineHeight: '1', width: '16px', height: '16px' }}
                 >
                   +
                 </button>
@@ -199,10 +204,10 @@ export const CartItem: React.FC<CartItemProps> = ({
         <div className="flex md:hidden flex-col w-full gap-3 mt-1">
           <div className="flex items-center gap-3">
             <div 
-              className="flex items-center justify-between border border-gray-200 bg-white shadow-sm"
+              className="flex items-center justify-between border border-gray-200 bg-white shadow-sm w-fit"
               style={{
                 width: '100px',
-                height: '36px',
+                height: '34px',
                 paddingLeft: '12px',
                 paddingRight: '12px',
                 borderRadius: '8px',
@@ -211,17 +216,22 @@ export const CartItem: React.FC<CartItemProps> = ({
               <button
                 type="button"
                 onClick={onDecrease}
-                className="text-gray-700 hover:text-black font-normal flex items-center justify-center"
-                style={{ fontSize: '16px', lineHeight: '1' }}
+                className="text-gray-700 hover:text-black font-semibold flex items-center justify-center select-none"
+                style={{ fontSize: '15px', lineHeight: '1', width: '16px', height: '16px' }}
               >
-                -
+                −
               </button>
-              <span className="text-xs font-semibold text-black">{quantity}</span>
+              <span 
+                className="font-semibold text-black text-center flex-1 select-none"
+                style={{ fontSize: '13px', lineHeight: '1' }}
+              >
+                {quantity}
+              </span>
               <button
                 type="button"
                 onClick={onIncrease}
-                className="text-gray-700 hover:text-black font-normal flex items-center justify-center"
-                style={{ fontSize: '16px', lineHeight: '1' }}
+                className="text-gray-700 hover:text-black font-semibold flex items-center justify-center select-none"
+                style={{ fontSize: '15px', lineHeight: '1', width: '16px', height: '16px' }}
               >
                 +
               </button>
