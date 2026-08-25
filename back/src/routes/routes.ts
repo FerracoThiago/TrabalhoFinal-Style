@@ -8,6 +8,7 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
 import { ProductController } from "../controllers/ProductController";
 import { validateCreateProduct, validateUpdateProduct } from "../middlewares/productMiddleware";
+import { AddressController } from "../controllers/AddressController";
 
 const router = Router();
 
@@ -40,5 +41,11 @@ router.get("/product/:id", ProductController.readProduct);
 router.get("/product", ProductController.readAllProducts);
 router.put("/product/:id", validateUpdateProduct, ProductController.updateProduct);
 router.delete("/product/:id", ProductController.deleteProduct);
+
+/*Address Controller*/
+router.post("/address", authMiddleware, AddressController.createAddress);
+router.get("/address", authMiddleware, AddressController.readAddresses);
+router.put("/address/:id", authMiddleware, AddressController.updateAddress);
+router.delete("/address/:id", authMiddleware, AddressController.deleteAddress);
 
 export default router;
