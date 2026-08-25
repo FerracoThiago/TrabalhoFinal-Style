@@ -11,13 +11,13 @@ const Header: React.FC = () => {
     <header className="w-full">
       {/* --- MOBILE COMPONENT --- */}
       <div className="block md:hidden w-full">
-        <div className="w-full bg-black text-white py-1 px-4 text-center text-[14px]">
+        <div className="w-full bg-black text-white py-1.5 px-4 text-center text-sm">
           Free shipping on orders over $100 | New arrivals daily
         </div>
         <div className="w-full bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-between">
           <div className="flex items-center gap-5 text-gray-700">
             <button aria-label="Menu" className="text-gray-700">
-              <Menu className="w-6 h-6" />
+              <Menu className="w-4 h-4" />
             </button>
             <div style={{ width: "76px", height: "32px" }}>
               <Logo variant="header" className="h-full w-full object-contain" />
@@ -37,7 +37,7 @@ const Header: React.FC = () => {
 
       {/* --- DESKTOP COMPONENT --- */}
       <div className="hidden md:block w-full bg-white border-b border-gray-200">
-        <div className="w-full bg-black text-white text-[11px] text-center py-1.5 px-4 tracking-wide">
+        <div className="w-full bg-black text-white py-1.5 px-4 text-center text-sm">
           Free shipping on orders over $100 | New arrivals daily
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">

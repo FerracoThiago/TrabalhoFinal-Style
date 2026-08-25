@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+
 import { Logo } from '../components/Logo';
 import { Input } from '../components/Input';
 import { Checkbox } from '../components/Checkbox';
 import { SubmitButton } from '../components/SubmitButton';
+
 import googleIcon from '../assets/icons/google.svg';
 import facebookIcon from '../assets/icons/facebook.svg';
 
 export const Cadastro: React.FC = () => {
+  const navigate = useNavigate();
+
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [newsletterAccepted, setNewsletterAccepted] = useState(true);
 
@@ -17,11 +22,24 @@ export const Cadastro: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError('');
+
+    if (!termsAccepted) {
+      setError('Você precisa aceitar os Termos de Serviço e a Política de Privacidade.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.');
+      return;
+    }
 
     try {
-      await fetch('http://localhost:3333/auth/register', {
+      const response = await fetch('http://localhost:3333/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,12 +51,21 @@ export const Cadastro: React.FC = () => {
           password,
           notifications: newsletterAccepted ? 1 : 0,
         }),
-      }); 
-      console.log('usuário registrado');
-      window.alert('usuário cadastrado com sucesso');
-      
-    } catch (error) {
-      // Tratamento de erro será feito posteriormente.
+      });
+
+      if (response.status === 201) {
+        navigate('/login');
+        return;
+      }
+
+      if (response.status === 409) {
+        setError('Usuário já cadastrado.');
+        return;
+      }
+
+      setError('Não foi possível realizar o cadastro.');
+    } catch {
+      setError('Erro ao conectar com o servidor.');
     }
   };
 
@@ -46,6 +73,7 @@ export const Cadastro: React.FC = () => {
     <div className="min-h-screen bg-white flex flex-col items-center justify-start py-8 px-4">
       <div className="flex flex-col items-center mb-8">
         <Logo className="h-8 mb-3" />
+
         <p className="text-sm text-gray-500 font-normal text-center">
           Create your account and start shopping
         </p>
@@ -56,6 +84,7 @@ export const Cadastro: React.FC = () => {
           <h1 className="text-2xl font-bold text-black mb-1">
             Create Account
           </h1>
+
           <p className="text-sm text-gray-500">
             Join our community and discover amazing fashion
           </p>
@@ -154,6 +183,12 @@ export const Cadastro: React.FC = () => {
             />
           </div>
 
+          {error && (
+            <p className="text-sm text-red-500 text-center">
+              {error}
+            </p>
+          )}
+
           <SubmitButton>
             Create Account
           </SubmitButton>
@@ -161,12 +196,13 @@ export const Cadastro: React.FC = () => {
 
         <div className="mt-6 text-center text-xs text-black">
           Already have an account?{' '}
-          <a
-            href="/login"
+
+          <Link
+            to="/login"
             className="font-semibold text-black underline"
           >
             Sign in
-          </a>
+          </Link>
         </div>
       </div>
     </div>
