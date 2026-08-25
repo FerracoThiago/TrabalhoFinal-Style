@@ -40,5 +40,6 @@ router.get("/product/:id", ProductController.readProduct);
 router.get("/product", ProductController.readAllProducts);
 router.put("/product/:id", validateUpdateProduct, ProductController.updateProduct);
 router.delete("/product/:id", ProductController.deleteProduct);
+router.post("/product/:id/image", photoUpload.array("photos", 5), ProductController.setProductImage);
 
 export default router;
