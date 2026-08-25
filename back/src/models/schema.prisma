@@ -51,7 +51,9 @@ model Address{
   state     String
   zipCode   String
   type      String
-  user      User[]
+  
+  userId    Int
+  user      User @relation(fields: [userId], references: [id])
 }
 
 model Cupom{
