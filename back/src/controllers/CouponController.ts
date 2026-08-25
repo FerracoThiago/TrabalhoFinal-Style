@@ -26,7 +26,7 @@ export class CouponController {
 
     public static async readCoupon(req:Request, res:Response){
         try {
-            const couponId = Number(req.params);
+            const couponId = Number(req.params.couponId);
             const foundCoupon = await prisma.cupom.findUnique({where:{id:couponId}});
             if(!foundCoupon)
                 return res.status(404).json({message: "cupom expirado ou não existe!"});
@@ -47,7 +47,8 @@ export class CouponController {
 
     public static async updateCoupon(req:Request,res:Response){
         try {
-            const {couponId, usageLimit, validate, discountMax, code, discount } = req.body;
+            const couponId = Number(req.params.couponId);
+            const { usageLimit, validate, discountMax, code, discount } = req.body;
             const foundCoupon = await prisma.cupom.findUnique({where:{id:couponId}});
             if(!foundCoupon)
                 return res.status(404).json({message: "cupom expirado ou não existe!"});
@@ -57,7 +58,7 @@ export class CouponController {
                 discountMax,
                 code,
                 discount
-            }
+            };
             if(validate)
                 updatedCoupon.validate = new Date(validate);
             
@@ -72,7 +73,7 @@ export class CouponController {
     }
     public static async deleteCoupon(req:Request, res:Response){
         try {
-            const couponId = Number(req.params);
+            const couponId = Number(req.params.couponId);
             const deletedCoupon = await prisma.cupom.delete({where:{id:couponId}});
             return res.status(200).json({message:"cupom deletado com sucesso!", deletedCoupon});
         } catch (e:any) {
@@ -92,10 +93,18 @@ export class CouponController {
                 return res.status(404).json({message: "cupom expirado ou não existe!"});
             
             const assignedCoupon = await prisma.cupom.update({
+                
                 data:{users:{ connect:{id:userId}}},
-                where:{id:foundCoupon.id}
+                where:{id:foundCoupon.id},
+                include:{users: {
+                        select: {
+                            id: true,
+                            email: true
+                        }
+                    }
+                }
             });
-            return res.status(200).json({message:"Usuario recebeu o cupom!"})
+            return res.status(200).json({message:"Usuario recebeu o cupom!", assignedCoupon})
         } catch (e:any) {
             return res.status(500).json({message:e.message});
         }
