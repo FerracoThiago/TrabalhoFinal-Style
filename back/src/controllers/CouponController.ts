@@ -24,6 +24,17 @@ export class CouponController {
         }
     }
 
+    public static async readCoupon(req:Request, res:Response){
+        try {
+            const couponId = Number(req.params);
+            const foundCoupon = await prisma.cupom.findUnique({where:{id:couponId}});
+            if(!foundCoupon)
+                return res.status(404).json({message: "cupom expirado ou não existe!"});
+            return res.status(200).json({message:"cupom encontrado com sucesso!", foundCoupon})
+        } catch (e:any) {
+            return res.status(500).json({message:e.message});
+        }
+    }
 
     public static async updateCoupon(req:Request,res:Response){
         try {
