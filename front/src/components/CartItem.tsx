@@ -36,6 +36,15 @@ export const CartItem: React.FC<CartItemProps> = ({
   onRemove,
   showDivider = true,
 }) => {
+  // Tipografia exata solicitada
+  const customTypography = {
+    fontFamily: 'Segoe UI',
+    fontWeight: 400,
+    fontSize: '14px',
+    lineHeight: '20px',
+    letterSpacing: '0%',
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col md:flex-row gap-4 items-start w-full">
@@ -59,7 +68,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                 >
                   {name}
                 </h3>
-                <p className="text-xs text-gray-500">{style}</p>
+                <p style={{ ...customTypography, color: 'rgba(107, 114, 128, 1)' }}>{style}</p>
               </div>
 
               <div className="text-right flex flex-col items-end shrink-0">
@@ -86,9 +95,13 @@ export const CartItem: React.FC<CartItemProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-4 mt-2 text-xs text-gray-600">
-              <span>Size: <strong className="text-black">{size}</strong></span>
-              <span>Color: <strong className="text-black">{color}</strong></span>
+            <div className="flex items-center gap-4 mt-2">
+              <span style={customTypography} className="text-gray-600">
+                Size: <strong className="text-black">{size}</strong>
+              </span>
+              <span style={customTypography} className="text-gray-600">
+                Color: <strong className="text-black">{color}</strong>
+              </span>
             </div>
           </div>
         </div>
@@ -108,7 +121,7 @@ export const CartItem: React.FC<CartItemProps> = ({
               >
                 {name}
               </h3>
-              <p className="text-xs text-gray-500">{style}</p>
+              <p style={{ ...customTypography, color: 'rgba(107, 114, 128, 1)' }}>{style}</p>
             </div>
             
             <div className="text-right flex flex-col items-end">
@@ -135,9 +148,13 @@ export const CartItem: React.FC<CartItemProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-4 mt-2 text-xs text-gray-600">
-            <span>Size: <strong className="text-black">{size}</strong></span>
-            <span>Color: <strong className="text-black">{color}</strong></span>
+          <div className="flex items-center gap-4 mt-2">
+            <span style={customTypography} className="text-gray-600">
+              Size: <strong className="text-black">{size}</strong>
+            </span>
+            <span style={customTypography} className="text-gray-600">
+              Color: <strong className="text-black">{color}</strong>
+            </span>
           </div>
 
           <div className="flex items-center justify-between mt-3">

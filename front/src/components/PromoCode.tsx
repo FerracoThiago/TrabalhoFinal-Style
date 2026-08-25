@@ -37,11 +37,14 @@ export const PromoCode: React.FC<PromoCodeProps> = ({ onApply }) => {
               onChange={(e) => setCode(e.target.value)}
             />
           </div>
-          {/* Reutilizando o Botão padronizado */}
+          {/* Botão corrigido com centralização e cor exata do Figma */}
           <Button 
-            variant="primary" 
             onClick={() => onApply?.(code)}
-            className="px-4 h-11 shrink-0"
+            className="flex items-center justify-center px-6 h-11 shrink-0 rounded-lg text-white font-semibold text-sm transition-colors"
+            style={{ 
+              backgroundColor: 'rgba(156, 163, 175, 1)', 
+              fontFamily: 'Segoe UI'
+            }}
           >
             Apply
           </Button>
