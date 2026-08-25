@@ -8,3 +8,8 @@ node_modules/
 
 .env
 keys
+back/keys/
+
+uploads/photos/*
+uploads/audio/*
+uploads/videos/*
