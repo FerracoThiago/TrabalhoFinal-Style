@@ -61,6 +61,17 @@ export class CouponController {
             return res.status(500).json({message:e.message});
         }
     }
+    public static async deleteCoupon(req:Request, res:Response){
+        try {
+            const couponId = Number(req.params);
+            const deletedCoupon = await prisma.cupom.delete({where:{id:couponId}});
+            return res.status(200).json({message:"cupom deletado com sucesso!", deletedCoupon});
+        } catch (e:any) {
+            return res.status(500).json({message:e.message});
+            
+        }
+    }
+
     public static async sendCouponToUser(req:Request,res:Response){
         try {
             /*auth middleware*/
