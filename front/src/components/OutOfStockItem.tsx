@@ -29,13 +29,13 @@ export const OutOfStockItem: React.FC<OutOfStockItemProps> = ({
       <div className="flex items-center space-x-2">
         <AlertCircle className="w-4 h-4 text-red-500" />
         <span 
-          className="text-black"
           style={{ 
             fontFamily: 'Segoe UI', 
             fontWeight: 600, 
             fontSize: '24px', 
             lineHeight: '24px', 
-            letterSpacing: '-0.6px' 
+            letterSpacing: '-0.6px',
+            color: 'rgba(220, 38, 38, 1)'
           }}
         >
           Out of Stock (1)
@@ -64,7 +64,7 @@ export const OutOfStockItem: React.FC<OutOfStockItemProps> = ({
                   >
                     {name}
                   </h3>
-                  <p className="text-xs text-gray-500">{style}</p>
+                  <p style={{ fontSize: '12px', color: 'rgba(107, 114, 128, 1)' }}>{style}</p>
                 </div>
                 <span className="text-base font-bold text-black">{price}</span>
               </div>
@@ -91,7 +91,7 @@ export const OutOfStockItem: React.FC<OutOfStockItemProps> = ({
                 >
                   {name}
                 </h3>
-                <p className="text-xs text-gray-500">{style}</p>
+                <p style={{ fontSize: '12px', color: 'rgba(107, 114, 128, 1)' }}>{style}</p>
               </div>
               <span className="text-base font-bold text-black">{price}</span>
             </div>
