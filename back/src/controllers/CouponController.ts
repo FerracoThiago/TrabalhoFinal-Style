@@ -36,6 +36,15 @@ export class CouponController {
         }
     }
 
+    public static async readAllCoupons(req:Request, res:Response){
+        try {
+            const allCoupons = await prisma.cupom.findMany();
+            return res.status(200).json({allCoupons});
+        } catch (e:any) {
+            return res.status(500).json({message:e.message});
+        }
+    }
+
     public static async updateCoupon(req:Request,res:Response){
         try {
             const {couponId, usageLimit, validate, discountMax, code, discount } = req.body;
