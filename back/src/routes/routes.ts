@@ -9,6 +9,7 @@ import { VariantController } from "../controllers/VariantController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { validateCreateProduct, validateUpdateProduct } from "../middlewares/productMiddleware";
 import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
+import { AddressController } from "../controllers/AddressController";
 
 const router = Router();
 
@@ -51,5 +52,10 @@ router.put("/coupon/:couponId",CouponController.updateCoupon);
 router.put("/coupon2user", authMiddleware,CouponController.sendCouponToUser);
 router.delete("/coupon/:couponId",CouponController.deleteCoupon);
 
+/*Address Controller*/
+router.post("/address", authMiddleware, AddressController.createAddress);
+router.get("/address", authMiddleware, AddressController.readAddresses);
+router.put("/address/:id", authMiddleware, AddressController.updateAddress);
+router.delete("/address/:id", authMiddleware, AddressController.deleteAddress);
 
 export default router;
