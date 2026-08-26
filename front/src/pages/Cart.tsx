@@ -57,17 +57,12 @@ export const Cart: React.FC = () => {
 
   const token = localStorage.getItem('token');
 
-  /*
-   * Imagens que já existem no frontend.
-   * Quando o backend fornecer imagens,
-   * product.images[0] será usada automaticamente.
-   */
   const imageMap: Record<number, string> = {
     1: tshirtImage,
     2: jeansImage,
   };
 
-  /*
+  /**
    * Busca o carrinho do usuário.
    */
   const loadCart = async () => {
@@ -105,8 +100,8 @@ export const Cart: React.FC = () => {
     loadCart();
   }, []);
 
-  /*
-   * Adiciona ou remove uma unidade do produto.
+  /**
+   * Adiciona ou diminui UMA unidade.
    */
   const updateQuantity = async (
     productId: number,
@@ -146,15 +141,52 @@ export const Cart: React.FC = () => {
     }
   };
 
-  /*
+  /**
+   * Remove o produto completamente.
+   *
+   * Usamos o mesmo endpoint atual do carrinho,
+   * enviando a quantidade atual do item para zerá-lo.
+   */
+  const removeItem = async (
+    productId: number,
+    currentQuantity: number
+  ) => {
+    try {
+      if (!token) {
+        console.error('Token não encontrado');
+        return;
+      }
+
+      const response = await fetch('http://localhost:3333/cart', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: currentQuantity,
+          operation: 'remove',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(data);
+        return;
+      }
+
+      console.log('Produto removido do carrinho:', data);
+
+      setCart(data);
+    } catch (error) {
+      console.error('Erro ao remover produto:', error);
+    }
+  };
+
+  /**
    * Quantidade total de unidades.
-   *
-   * Exemplo:
-   * Produto 1 = 2
-   * Produto 2 = 1
-   * Produto 3 = 1
-   *
-   * Total = 4 items
    */
   const totalItems =
     cart?.items.reduce(
@@ -162,8 +194,8 @@ export const Cart: React.FC = () => {
       0
     ) ?? 0;
 
-  /*
-   * Subtotal calculado com os produtos que estão no carrinho.
+  /**
+   * Subtotal.
    */
   const calculatedSubtotal =
     cart?.items.reduce(
@@ -172,11 +204,8 @@ export const Cart: React.FC = () => {
       0
     ) ?? 0;
 
-  /*
+  /**
    * Economia.
-   *
-   * Atualmente os produtos da API estão retornando
-   * discount como null, portanto o valor será 0.
    */
   const calculatedSavings =
     cart?.items.reduce((total, item) => {
@@ -185,20 +214,20 @@ export const Cart: React.FC = () => {
       return total + discount * item.quantity;
     }, 0) ?? 0;
 
-  /*
+  /**
    * Frete.
-   *
-   * O backend atualmente retorna shipping = 0.
    */
   const calculatedShipping = cart?.shipping ?? 0;
 
-  /*
-   * Total do pedido.
+  /**
+   * Total.
    */
   const calculatedTotal =
-    calculatedSubtotal - calculatedSavings + calculatedShipping;
+    calculatedSubtotal -
+    calculatedSavings +
+    calculatedShipping;
 
-  /*
+  /**
    * Produtos disponíveis.
    */
   const availableItems =
@@ -206,7 +235,7 @@ export const Cart: React.FC = () => {
       (item) => item.product.inStock
     ) ?? [];
 
-  /*
+  /**
    * Produtos fora de estoque.
    */
   const outOfStockItems =
@@ -236,7 +265,6 @@ export const Cart: React.FC = () => {
 
         {/* HEADER */}
         <div className="flex items-center justify-between w-full mx-auto px-1">
-
           <div className="flex items-center space-x-3">
             <button
               type="button"
@@ -260,7 +288,6 @@ export const Cart: React.FC = () => {
             </h1>
           </div>
 
-          {/* QUANTIDADE TOTAL */}
           <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0">
             {totalItems}{' '}
             {totalItems === 1 ? 'item' : 'items'}
@@ -288,7 +315,6 @@ export const Cart: React.FC = () => {
                   boxSizing: 'border-box',
                 }}
               >
-
                 <div className="flex items-center space-x-2 px-1">
                   <span className="w-3 h-3 rounded-full bg-emerald-500" />
 
@@ -310,10 +336,8 @@ export const Cart: React.FC = () => {
                   className="flex flex-col w-full"
                   style={{ gap: '24px' }}
                 >
-
                   {availableItems.map((item, index) => {
                     const product = item.product;
-
                     const variant = product.variants?.[0];
 
                     const image =
@@ -339,25 +363,47 @@ export const Cart: React.FC = () => {
                         savings=""
                         quantity={item.quantity}
                         maxQuantity={maxQuantity}
-                        onDecrease={() =>
-                          updateQuantity(
-                            item.productId,
-                            'remove'
-                          )
-                        }
+
+                        /*
+                         * IMPORTANTE:
+                         * Só diminui se a quantidade for maior que 1.
+                         *
+                         * 3 -> 2
+                         * 2 -> 1
+                         * 1 -> não faz nada
+                         */
+                        onDecrease={() => {
+                          if (item.quantity > 1) {
+                            updateQuantity(
+                              item.productId,
+                              'remove'
+                            );
+                          }
+                        }}
+
                         onIncrease={() =>
                           updateQuantity(
                             item.productId,
                             'add'
                           )
                         }
+
+                        /*
+                         * A lixeira remove o produto inteiro.
+                         */
+                        onRemove={() =>
+                          removeItem(
+                            item.productId,
+                            item.quantity
+                          )
+                        }
+
                         showDivider={
                           index < availableItems.length - 1
                         }
                       />
                     );
                   })}
-
                 </div>
               </div>
             )}
@@ -383,10 +429,8 @@ export const Cart: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-6">
-
                   {outOfStockItems.map((item) => {
                     const product = item.product;
-
                     const variant =
                       product.variants?.[0];
 
@@ -412,23 +456,34 @@ export const Cart: React.FC = () => {
                         maxQuantity={
                           variant?.stock ?? 99
                         }
-                        onDecrease={() =>
-                          updateQuantity(
-                            item.productId,
-                            'remove'
-                          )
-                        }
+
+                        onDecrease={() => {
+                          if (item.quantity > 1) {
+                            updateQuantity(
+                              item.productId,
+                              'remove'
+                            );
+                          }
+                        }}
+
                         onIncrease={() =>
                           updateQuantity(
                             item.productId,
                             'add'
                           )
                         }
+
+                        onRemove={() =>
+                          removeItem(
+                            item.productId,
+                            item.quantity
+                          )
+                        }
+
                         showDivider={false}
                       />
                     );
                   })}
-
                 </div>
               </div>
             )}
@@ -449,11 +504,11 @@ export const Cart: React.FC = () => {
             <PromoCode />
 
             <OrderSummary
-              subtotal={calculatedSubtotal}
-              savings={calculatedSavings}
-              shipping={calculatedShipping}
-              total={calculatedTotal}
-              itemCount={totalItems}
+              subtotalItems={totalItems}
+              subtotal={`$${calculatedSubtotal.toFixed(2)}`}
+              savings={`-$${calculatedSavings.toFixed(2)}`}
+              shipping={`$${calculatedShipping.toFixed(2)}`}
+              total={`$${calculatedTotal.toFixed(2)}`}
               onCheckout={() => {}}
               onContinueShopping={() => navigate('/')}
             />

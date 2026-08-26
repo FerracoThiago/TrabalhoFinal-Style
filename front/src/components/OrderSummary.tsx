@@ -1,26 +1,32 @@
 import React from 'react';
-
 import { Button } from './Button';
 
 interface OrderSummaryProps {
-  subtotalItems: number;
-  subtotal: number;
-  savings: number;
-  shipping: number;
-  total: number;
+  subtotalItems?: number;
+  subtotal?: number;
+  savings?: number;
+  shipping?: number;
+  total?: number;
   onCheckout?: () => void;
   onContinueShopping?: () => void;
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
-  subtotalItems,
-  subtotal,
-  savings,
-  shipping,
-  total,
+  subtotalItems = 0,
+  subtotal = 0,
+  savings = 0,
+  shipping = 0,
+  total = 0,
   onCheckout,
   onContinueShopping,
 }) => {
+  // Garante que os valores usados pelo componente sejam sempre números.
+  const safeSubtotalItems = Number(subtotalItems) || 0;
+  const safeSubtotal = Number(subtotal) || 0;
+  const safeSavings = Number(savings) || 0;
+  const safeShipping = Number(shipping) || 0;
+  const safeTotal = Number(total) || 0;
+
   return (
     <div
       className="bg-white border border-gray-100 shadow-sm rounded-xl flex flex-col w-full"
@@ -47,14 +53,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       </h2>
 
       <div className="flex flex-col gap-4">
-
         <div className="flex justify-between items-center text-sm">
           <span className="text-gray-600">
-            Subtotal ({subtotalItems} {subtotalItems === 1 ? 'item' : 'items'})
+            Subtotal ({safeSubtotalItems}{' '}
+            {safeSubtotalItems === 1 ? 'item' : 'items'})
           </span>
 
           <span className="font-semibold text-black">
-            ${subtotal.toFixed(2)}
+            ${safeSubtotal.toFixed(2)}
           </span>
         </div>
 
@@ -64,7 +70,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           </span>
 
           <span className="font-semibold text-red-500">
-            -${savings.toFixed(2)}
+            -${safeSavings.toFixed(2)}
           </span>
         </div>
 
@@ -80,7 +86,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
           </div>
 
           <span className="font-semibold text-black">
-            ${shipping.toFixed(2)}
+            ${safeShipping.toFixed(2)}
           </span>
         </div>
       </div>
@@ -93,7 +99,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         </span>
 
         <span className="font-bold text-black text-base">
-          ${total.toFixed(2)}
+          ${safeTotal.toFixed(2)}
         </span>
       </div>
 
