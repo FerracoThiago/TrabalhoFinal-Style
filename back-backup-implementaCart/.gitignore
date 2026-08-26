@@ -1,0 +1,15 @@
+node_modules/
+    .DS_Store
+    *.sqlite
+    *.png
+    *.jpg
+    .idea
+    id_rsa_priv.pem
+
+.env
+keys
+back/keys/
+
+uploads/photos/*
+uploads/audio/*
+uploads/videos/*
