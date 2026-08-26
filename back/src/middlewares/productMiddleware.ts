@@ -16,6 +16,7 @@ export const validateCreateProduct = (req: Request, res: Response, next: NextFun
             req.body.variants = [req.body.variants]; // se não for JSON, cria um array com a string
         }
     }
+    
 
     const result = CreateProductSchema.safeParse(req.body);
 
