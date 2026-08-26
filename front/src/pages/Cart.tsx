@@ -1,100 +1,242 @@
 import React, { useEffect, useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
-
 import { ArrowLeft } from 'lucide-react';
 
 import { CartItem } from '../components/CartItem';
-
-import { OutOfStockItem } from '../components/OutOfStockItem';
-
 import { PromoCode } from '../components/PromoCode';
-
 import { OrderSummary } from '../components/OrderSummary';
 
 import tshirtImage from '../assets/images/cart-tshirt.png';
-
 import jeansImage from '../assets/images/cart-jeans.png';
 
-import summerDressImage from '../assets/images/cart-summer-dress.png';
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  discount: number | null;
+  avgReview: number | null;
+  specification: string;
+  tags: string[];
+  category: string;
+  inStock: boolean;
+  variants: {
+    id: number;
+    size: string;
+    color: string;
+    stock: number;
+    productId: number;
+  }[];
+  images: string[];
+}
+
+interface CartItemData {
+  id: number;
+  cartId: number;
+  productId: number;
+  quantity: number;
+  product: Product;
+}
+
+interface CartData {
+  id: number;
+  total: number;
+  subtotal: number;
+  savings: number;
+  shipping: number;
+  promoCode: string | null;
+  userId: number;
+  items: CartItemData[];
+}
 
 export const Cart: React.FC = () => {
   const navigate = useNavigate();
 
-  const [tshirtQty, setTshirtQty] = useState(2);
-  const [jeansQty, setJeansQty] = useState(1);
+  const [cart, setCart] = useState<CartData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const token = localStorage.getItem('token');
+
+  /*
+   * Imagens que já existem no frontend.
+   * Quando o backend fornecer imagens,
+   * product.images[0] será usada automaticamente.
+   */
+  const imageMap: Record<number, string> = {
+    1: tshirtImage,
+    2: jeansImage,
+  };
+
+  /*
+   * Busca o carrinho do usuário.
+   */
+  const loadCart = async () => {
+    try {
+      if (!token) {
+        console.error('Token não encontrado');
+        return;
+      }
+
+      const response = await fetch('http://localhost:3333/cart', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(data);
+        return;
+      }
+
+      console.log('Carrinho carregado:', data);
+
+      setCart(data);
+    } catch (error) {
+      console.error('Erro ao carregar carrinho:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadCart = async () => {
-      try {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-          console.error('Token não encontrado');
-          return;
-        }
-
-        const response = await fetch('http://localhost:3333/cart', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          console.error(data);
-          return;
-        }
-
-        console.log('Carrinho carregado:', data);
-
-        const tshirtItem = data.items?.find(
-          (item: any) =>
-            item.product?.name === 'Premium Cotton T-Shirt'
-        );
-
-        const jeansItem = data.items?.find(
-          (item: any) =>
-            item.product?.name === 'Designer Jeans'
-        );
-
-        if (tshirtItem) {
-          setTshirtQty(tshirtItem.quantity);
-        }
-
-        if (jeansItem) {
-          setJeansQty(jeansItem.quantity);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar carrinho:', error);
-      }
-    };
-
     loadCart();
   }, []);
 
-  const handleDecreaseTshirt = () => {
-    setTshirtQty((prev) => (prev > 1 ? prev - 1 : 1));
+  /*
+   * Adiciona ou remove uma unidade do produto.
+   */
+  const updateQuantity = async (
+    productId: number,
+    operation: 'add' | 'remove'
+  ) => {
+    try {
+      if (!token) {
+        console.error('Token não encontrado');
+        return;
+      }
+
+      const response = await fetch('http://localhost:3333/cart', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: 1,
+          operation,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(data);
+        return;
+      }
+
+      console.log('Carrinho atualizado:', data);
+
+      setCart(data);
+    } catch (error) {
+      console.error('Erro ao atualizar carrinho:', error);
+    }
   };
 
-  const handleIncreaseTshirt = () => {
-    setTshirtQty((prev) => (prev < 10 ? prev + 1 : 10));
-  };
+  /*
+   * Quantidade total de unidades.
+   *
+   * Exemplo:
+   * Produto 1 = 2
+   * Produto 2 = 1
+   * Produto 3 = 1
+   *
+   * Total = 4 items
+   */
+  const totalItems =
+    cart?.items.reduce(
+      (total, item) => total + item.quantity,
+      0
+    ) ?? 0;
 
-  const handleDecreaseJeans = () => {
-    setJeansQty((prev) => (prev > 1 ? prev - 1 : 1));
-  };
+  /*
+   * Subtotal calculado com os produtos que estão no carrinho.
+   */
+  const calculatedSubtotal =
+    cart?.items.reduce(
+      (total, item) =>
+        total + item.product.price * item.quantity,
+      0
+    ) ?? 0;
 
-  const handleIncreaseJeans = () => {
-    setJeansQty((prev) => (prev < 5 ? prev + 1 : 5));
-  };
+  /*
+   * Economia.
+   *
+   * Atualmente os produtos da API estão retornando
+   * discount como null, portanto o valor será 0.
+   */
+  const calculatedSavings =
+    cart?.items.reduce((total, item) => {
+      const discount = item.product.discount ?? 0;
+
+      return total + discount * item.quantity;
+    }, 0) ?? 0;
+
+  /*
+   * Frete.
+   *
+   * O backend atualmente retorna shipping = 0.
+   */
+  const calculatedShipping = cart?.shipping ?? 0;
+
+  /*
+   * Total do pedido.
+   */
+  const calculatedTotal =
+    calculatedSubtotal - calculatedSavings + calculatedShipping;
+
+  /*
+   * Produtos disponíveis.
+   */
+  const availableItems =
+    cart?.items.filter(
+      (item) => item.product.inStock
+    ) ?? [];
+
+  /*
+   * Produtos fora de estoque.
+   */
+  const outOfStockItems =
+    cart?.items.filter(
+      (item) => !item.product.inStock
+    ) ?? [];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <span>Carregando carrinho...</span>
+      </div>
+    );
+  }
+
+  if (!cart) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <span>Carrinho não encontrado.</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
+
+        {/* HEADER */}
         <div className="flex items-center justify-between w-full mx-auto px-1">
+
           <div className="flex items-center space-x-3">
             <button
               type="button"
@@ -111,104 +253,211 @@ export const Cart: React.FC = () => {
                 fontFamily: 'Segoe UI',
                 fontWeight: 700,
                 fontSize: '24px',
-                lineHeight: '30px'
+                lineHeight: '30px',
               }}
             >
               Shopping Cart
             </h1>
           </div>
 
+          {/* QUANTIDADE TOTAL */}
           <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0">
-            3 items
+            {totalItems}{' '}
+            {totalItems === 1 ? 'item' : 'items'}
           </span>
         </div>
 
+        {/* CONTEÚDO */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start w-full">
+
+          {/* PRODUTOS */}
           <div className="flex flex-col gap-6 md:col-span-2 w-full">
-            <div
-              className="bg-white border border-gray-100 shadow-sm flex flex-col w-full max-w-[358px] md:max-w-none mx-auto md:mx-0"
-              style={{
-                paddingTop: '25px',
-                paddingRight: '16px',
-                paddingBottom: '25px',
-                paddingLeft: '16px',
-                gap: '24px',
-                borderRadius: '12px',
-                borderWidth: '1px',
-                boxSizing: 'border-box'
-              }}
-            >
-              <div className="flex items-center space-x-2 px-1">
-                <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
 
-                <span
-                  className="text-black"
-                  style={{
-                    fontFamily: 'Segoe UI',
-                    fontWeight: 600,
-                    fontSize: '24px',
-                    lineHeight: '24px',
-                    letterSpacing: '-0.6px'
-                  }}
+            {/* DISPONÍVEIS */}
+            {availableItems.length > 0 && (
+              <div
+                className="bg-white border border-gray-100 shadow-sm flex flex-col w-full max-w-[358px] md:max-w-none mx-auto md:mx-0"
+                style={{
+                  paddingTop: '25px',
+                  paddingRight: '16px',
+                  paddingBottom: '25px',
+                  paddingLeft: '16px',
+                  gap: '24px',
+                  borderRadius: '12px',
+                  borderWidth: '1px',
+                  boxSizing: 'border-box',
+                }}
+              >
+
+                <div className="flex items-center space-x-2 px-1">
+                  <span className="w-3 h-3 rounded-full bg-emerald-500" />
+
+                  <span
+                    className="text-black"
+                    style={{
+                      fontFamily: 'Segoe UI',
+                      fontWeight: 600,
+                      fontSize: '24px',
+                      lineHeight: '24px',
+                      letterSpacing: '-0.6px',
+                    }}
+                  >
+                    Available Items ({availableItems.length})
+                  </span>
+                </div>
+
+                <div
+                  className="flex flex-col w-full"
+                  style={{ gap: '24px' }}
                 >
-                  Available Items (2)
-                </span>
+
+                  {availableItems.map((item, index) => {
+                    const product = item.product;
+
+                    const variant = product.variants?.[0];
+
+                    const image =
+                      product.images?.[0] ||
+                      imageMap[product.id] ||
+                      tshirtImage;
+
+                    const maxQuantity =
+                      variant?.stock ?? 99;
+
+                    return (
+                      <CartItem
+                        key={item.id}
+                        image={image}
+                        name={product.name}
+                        style={`STYLE ${
+                          product.category || 'Collection'
+                        }`}
+                        size={variant?.size || 'N/A'}
+                        color={variant?.color || 'N/A'}
+                        price={`$${product.price.toFixed(2)}`}
+                        oldPrice=""
+                        savings=""
+                        quantity={item.quantity}
+                        maxQuantity={maxQuantity}
+                        onDecrease={() =>
+                          updateQuantity(
+                            item.productId,
+                            'remove'
+                          )
+                        }
+                        onIncrease={() =>
+                          updateQuantity(
+                            item.productId,
+                            'add'
+                          )
+                        }
+                        showDivider={
+                          index < availableItems.length - 1
+                        }
+                      />
+                    );
+                  })}
+
+                </div>
               </div>
+            )}
 
-              <div className="flex flex-col w-full" style={{ gap: '24px' }}>
-                <CartItem
-                  image={tshirtImage}
-                  name="Premium Cotton T-Shirt"
-                  style="STYLE Premium"
-                  size="M"
-                  color="Black"
-                  price="$29"
-                  oldPrice="$49"
-                  savings="$20"
-                  quantity={tshirtQty}
-                  maxQuantity={10}
-                  onDecrease={handleDecreaseTshirt}
-                  onIncrease={handleIncreaseTshirt}
-                  showDivider={true}
-                />
+            {/* FORA DE ESTOQUE */}
+            {outOfStockItems.length > 0 && (
+              <div className="w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
 
-                <CartItem
-                  image={jeansImage}
-                  name="Designer Jeans"
-                  style="STYLE Premium"
-                  size="32"
-                  color="Dark Blue"
-                  price="$79"
-                  oldPrice="$120"
-                  savings="$41"
-                  quantity={jeansQty}
-                  maxQuantity={5}
-                  onDecrease={handleDecreaseJeans}
-                  onIncrease={handleIncreaseJeans}
-                  showDivider={false}
-                />
+                <div className="flex items-center space-x-2 mb-4">
+                  <span className="w-3 h-3 rounded-full bg-gray-400" />
+
+                  <span
+                    className="text-black"
+                    style={{
+                      fontFamily: 'Segoe UI',
+                      fontWeight: 600,
+                      fontSize: '24px',
+                      lineHeight: '24px',
+                    }}
+                  >
+                    Out of Stock ({outOfStockItems.length})
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-6">
+
+                  {outOfStockItems.map((item) => {
+                    const product = item.product;
+
+                    const variant =
+                      product.variants?.[0];
+
+                    const image =
+                      product.images?.[0] ||
+                      imageMap[product.id] ||
+                      tshirtImage;
+
+                    return (
+                      <CartItem
+                        key={item.id}
+                        image={image}
+                        name={product.name}
+                        style={`STYLE ${
+                          product.category || 'Collection'
+                        }`}
+                        size={variant?.size || 'N/A'}
+                        color={variant?.color || 'N/A'}
+                        price={`$${product.price.toFixed(2)}`}
+                        oldPrice=""
+                        savings=""
+                        quantity={item.quantity}
+                        maxQuantity={
+                          variant?.stock ?? 99
+                        }
+                        onDecrease={() =>
+                          updateQuantity(
+                            item.productId,
+                            'remove'
+                          )
+                        }
+                        onIncrease={() =>
+                          updateQuantity(
+                            item.productId,
+                            'add'
+                          )
+                        }
+                        showDivider={false}
+                      />
+                    );
+                  })}
+
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
-              <OutOfStockItem
-                image={summerDressImage}
-                name="Summer Dress"
-                style="STYLE Collection"
-                price="$49"
-                size="S"
-                color="Floral"
-              />
-            </div>
+            {/* CARRINHO VAZIO */}
+            {cart.items.length === 0 && (
+              <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-8 text-center">
+                <p className="text-gray-500">
+                  Seu carrinho está vazio.
+                </p>
+              </div>
+            )}
           </div>
 
+          {/* RESUMO */}
           <div className="flex flex-col gap-6 w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
+
             <PromoCode />
 
             <OrderSummary
+              subtotal={calculatedSubtotal}
+              savings={calculatedSavings}
+              shipping={calculatedShipping}
+              total={calculatedTotal}
+              itemCount={totalItems}
               onCheckout={() => {}}
               onContinueShopping={() => navigate('/')}
             />
+
           </div>
         </div>
       </div>

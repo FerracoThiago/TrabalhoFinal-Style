@@ -1,27 +1,28 @@
 import React from 'react';
+
 import { Button } from './Button';
 
 interface OrderSummaryProps {
-  subtotalItems?: number;
-  subtotal?: string;
-  savings?: string;
-  shipping?: string;
-  total?: string;
+  subtotalItems: number;
+  subtotal: number;
+  savings: number;
+  shipping: number;
+  total: number;
   onCheckout?: () => void;
   onContinueShopping?: () => void;
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
-  subtotalItems = 2,
-  subtotal = '$186.00',
-  savings = '-$121.00',
-  shipping = '$0.00',
-  total = '$186.00',
+  subtotalItems,
+  subtotal,
+  savings,
+  shipping,
+  total,
   onCheckout,
   onContinueShopping,
 }) => {
   return (
-    <div 
+    <div
       className="bg-white border border-gray-100 shadow-sm rounded-xl flex flex-col w-full"
       style={{
         maxWidth: '434.66px',
@@ -29,63 +30,86 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         paddingRight: '20px',
         paddingBottom: '25px',
         paddingLeft: '20px',
-        gap: '24px'
+        gap: '24px',
       }}
     >
-      <h2 
+      <h2
         className="text-black"
-        style={{ 
-          fontFamily: 'Segoe UI', 
-          fontWeight: 600, 
-          fontSize: '24px', 
-          lineHeight: '24px', 
-          letterSpacing: '-0.6px' 
+        style={{
+          fontFamily: 'Segoe UI',
+          fontWeight: 600,
+          fontSize: '24px',
+          lineHeight: '24px',
+          letterSpacing: '-0.6px',
         }}
       >
         Order Summary
       </h2>
 
       <div className="flex flex-col gap-4">
+
         <div className="flex justify-between items-center text-sm">
-          <span className="text-gray-600">Subtotal ({subtotalItems} items)</span>
-          <span className="font-semibold text-black">{subtotal}</span>
+          <span className="text-gray-600">
+            Subtotal ({subtotalItems} {subtotalItems === 1 ? 'item' : 'items'})
+          </span>
+
+          <span className="font-semibold text-black">
+            ${subtotal.toFixed(2)}
+          </span>
         </div>
 
         <div className="flex justify-between items-center text-sm">
-          <span className="text-red-500">Savings</span>
-          <span className="font-semibold text-red-500">{savings}</span>
+          <span className="text-red-500">
+            Savings
+          </span>
+
+          <span className="font-semibold text-red-500">
+            -${savings.toFixed(2)}
+          </span>
         </div>
 
         <div className="flex justify-between items-center text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-gray-600">Shipping</span>
+            <span className="text-gray-600">
+              Shipping
+            </span>
+
             <span className="bg-gray-100 text-black text-[10px] font-semibold px-2 py-0.5 rounded">
               Free
             </span>
           </div>
-          <span className="font-semibold text-black">{shipping}</span>
+
+          <span className="font-semibold text-black">
+            ${shipping.toFixed(2)}
+          </span>
         </div>
       </div>
 
       <div className="border-t border-gray-100" />
 
       <div className="flex justify-between items-center">
-        <span className="font-bold text-black text-base">Total</span>
-        <span className="font-bold text-black text-base">{total}</span>
+        <span className="font-bold text-black text-base">
+          Total
+        </span>
+
+        <span className="font-bold text-black text-base">
+          ${total.toFixed(2)}
+        </span>
       </div>
 
       <div className="flex flex-col gap-3 mt-2">
-        <Button 
-          variant="primary" 
-          fullWidth 
+        <Button
+          variant="primary"
+          fullWidth
           onClick={onCheckout}
           className="h-12"
         >
           Proceed to Checkout
         </Button>
-        <Button 
-          variant="outline" 
-          fullWidth 
+
+        <Button
+          variant="outline"
+          fullWidth
           onClick={onContinueShopping}
           className="h-12"
         >
@@ -97,6 +121,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <p className="text-[10px] text-gray-400">
           Secure checkout with SSL encryption
         </p>
+
         <p className="text-[10px] text-gray-400">
           30-day return policy - Free returns
         </p>
