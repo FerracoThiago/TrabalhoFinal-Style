@@ -35,6 +35,10 @@ interface CartItemData {
   cartId: number;
   productId: number;
   quantity: number;
+
+  // O backend pode retornar o preço diretamente no item.
+  price?: number;
+
   product: Product;
 }
 
@@ -87,7 +91,6 @@ export const Cart: React.FC = () => {
       }
 
       console.log('Carrinho carregado:', data);
-
       setCart(data);
     } catch (error) {
       console.error('Erro ao carregar carrinho:', error);
@@ -134,7 +137,6 @@ export const Cart: React.FC = () => {
       }
 
       console.log('Carrinho atualizado:', data);
-
       setCart(data);
     } catch (error) {
       console.error('Erro ao atualizar carrinho:', error);
@@ -143,9 +145,6 @@ export const Cart: React.FC = () => {
 
   /**
    * Remove o produto completamente.
-   *
-   * Usamos o mesmo endpoint atual do carrinho,
-   * enviando a quantidade atual do item para zerá-lo.
    */
   const removeItem = async (
     productId: number,
@@ -178,7 +177,6 @@ export const Cart: React.FC = () => {
       }
 
       console.log('Produto removido do carrinho:', data);
-
       setCart(data);
     } catch (error) {
       console.error('Erro ao remover produto:', error);
@@ -196,20 +194,32 @@ export const Cart: React.FC = () => {
 
   /**
    * Subtotal.
+   *
+   * O backend está retornando price diretamente no item:
+   *
+   * {
+   *   productId: 1,
+   *   quantity: 3,
+   *   price: 29,
+   *   product: {...}
+   * }
+   *
+   * Por isso usamos item.price primeiro.
+   * Caso não exista, usamos product.price.
    */
   const calculatedSubtotal =
-    cart?.items.reduce(
-      (total, item) =>
-        total + item.product.price * item.quantity,
-      0
-    ) ?? 0;
+    cart?.items.reduce((total, item) => {
+      const price = item.price ?? item.product?.price ?? 0;
+
+      return total + price * item.quantity;
+    }, 0) ?? 0;
 
   /**
    * Economia.
    */
   const calculatedSavings =
     cart?.items.reduce((total, item) => {
-      const discount = item.product.discount ?? 0;
+      const discount = item.product?.discount ?? 0;
 
       return total + discount * item.quantity;
     }, 0) ?? 0;
@@ -232,7 +242,7 @@ export const Cart: React.FC = () => {
    */
   const availableItems =
     cart?.items.filter(
-      (item) => item.product.inStock
+      (item) => item.product?.inStock
     ) ?? [];
 
   /**
@@ -240,7 +250,7 @@ export const Cart: React.FC = () => {
    */
   const outOfStockItems =
     cart?.items.filter(
-      (item) => !item.product.inStock
+      (item) => !item.product?.inStock
     ) ?? [];
 
   if (loading) {
@@ -338,15 +348,20 @@ export const Cart: React.FC = () => {
                 >
                   {availableItems.map((item, index) => {
                     const product = item.product;
-                    const variant = product.variants?.[0];
+                    const variant = product?.variants?.[0];
 
                     const image =
-                      product.images?.[0] ||
+                      product?.images?.[0] ||
                       imageMap[product.id] ||
                       tshirtImage;
 
                     const maxQuantity =
                       variant?.stock ?? 99;
+
+                    const price =
+                      item.price ??
+                      product?.price ??
+                      0;
 
                     return (
                       <CartItem
@@ -358,20 +373,12 @@ export const Cart: React.FC = () => {
                         }`}
                         size={variant?.size || 'N/A'}
                         color={variant?.color || 'N/A'}
-                        price={`$${product.price.toFixed(2)}`}
+                        price={`$${price.toFixed(2)}`}
                         oldPrice=""
                         savings=""
                         quantity={item.quantity}
                         maxQuantity={maxQuantity}
 
-                        /*
-                         * IMPORTANTE:
-                         * Só diminui se a quantidade for maior que 1.
-                         *
-                         * 3 -> 2
-                         * 2 -> 1
-                         * 1 -> não faz nada
-                         */
                         onDecrease={() => {
                           if (item.quantity > 1) {
                             updateQuantity(
@@ -388,9 +395,6 @@ export const Cart: React.FC = () => {
                           )
                         }
 
-                        /*
-                         * A lixeira remove o produto inteiro.
-                         */
                         onRemove={() =>
                           removeItem(
                             item.productId,
@@ -431,13 +435,17 @@ export const Cart: React.FC = () => {
                 <div className="flex flex-col gap-6">
                   {outOfStockItems.map((item) => {
                     const product = item.product;
-                    const variant =
-                      product.variants?.[0];
+                    const variant = product?.variants?.[0];
 
                     const image =
-                      product.images?.[0] ||
+                      product?.images?.[0] ||
                       imageMap[product.id] ||
                       tshirtImage;
+
+                    const price =
+                      item.price ??
+                      product?.price ??
+                      0;
 
                     return (
                       <CartItem
@@ -449,13 +457,11 @@ export const Cart: React.FC = () => {
                         }`}
                         size={variant?.size || 'N/A'}
                         color={variant?.color || 'N/A'}
-                        price={`$${product.price.toFixed(2)}`}
+                        price={`$${price.toFixed(2)}`}
                         oldPrice=""
                         savings=""
                         quantity={item.quantity}
-                        maxQuantity={
-                          variant?.stock ?? 99
-                        }
+                        maxQuantity={variant?.stock ?? 99}
 
                         onDecrease={() => {
                           if (item.quantity > 1) {
@@ -505,10 +511,10 @@ export const Cart: React.FC = () => {
 
             <OrderSummary
               subtotalItems={totalItems}
-              subtotal={`$${calculatedSubtotal.toFixed(2)}`}
-              savings={`-$${calculatedSavings.toFixed(2)}`}
-              shipping={`$${calculatedShipping.toFixed(2)}`}
-              total={`$${calculatedTotal.toFixed(2)}`}
+              subtotal={calculatedSubtotal}
+              savings={calculatedSavings}
+              shipping={calculatedShipping}
+              total={calculatedTotal}
               onCheckout={() => {}}
               onContinueShopping={() => navigate('/')}
             />
