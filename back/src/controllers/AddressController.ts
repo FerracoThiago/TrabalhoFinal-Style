@@ -7,7 +7,7 @@ export class AddressController {
     public static async createAddress(req: Request, res: Response) {
         try {
             const userId = Number(res.locals.user.id);
-            const {street, city, state, zipCode, type} = req.body;
+            const { street, city, state, zipCode, type } = req.body;
 
             const address = await prisma.address.create({
                 data: {
@@ -17,14 +17,14 @@ export class AddressController {
                     zipCode,
                     type,
                     user: {
-                        connect: {id: userId}
+                        connect: { id: userId }
                     }
                 }
             });
             return res.status(201).json(address);
 
         } catch (e: any) {
-            return res.status(500).json({message: e.message});
+            return res.status(500).json({ message: e.message });
         }
     }
 
@@ -39,7 +39,7 @@ export class AddressController {
 
             return res.status(200).json(addresses);
         } catch (e: any) {
-            return res.status(500).json({message: e.message});
+            return res.status(500).json({ message: e.message });
         }
     }
 
@@ -47,17 +47,17 @@ export class AddressController {
         try {
             const userId = Number(res.locals.user.id);
             const addressId = Number(req.params.id);
-            const {street, city, state, zipCode, type} = req.body;
+            const { street, city, state, zipCode, type } = req.body;
             const address = await prisma.address.findUnique({
                 where: {
                     id: addressId
                 }
             });
             if (!address) {
-                return res.status(404).json({message: "Endereço não encontrado"});
+                return res.status(404).json({ message: "Endereço não encontrado" });
             }
             if (address.userId !== userId) {
-                return res.status(403).json({message: "Erro de autenticação"});
+                return res.status(403).json({ message: "Erro de autenticação" });
             }
 
             const updatedAddress = await prisma.address.update({
@@ -74,7 +74,7 @@ export class AddressController {
             });
             return res.status(200).json(updatedAddress);
         } catch (e: any) {
-            return res.status(500).json({message: e.message});
+            return res.status(500).json({ message: e.message });
         }
     }
 
@@ -88,10 +88,10 @@ export class AddressController {
                 }
             });
             if (!address) {
-                return res.status(404).json({message: "Endereço não encontrado"});
+                return res.status(404).json({ message: "Endereço não encontrado" });
             }
             if (address.userId !== userId) {
-                return res.status(403).json({message: "Erro de autenticação"});
+                return res.status(403).json({ message: "Erro de autenticação" });
             }
 
             await prisma.address.delete({
@@ -99,9 +99,9 @@ export class AddressController {
                     id: addressId
                 }
             });
-            return res.status(200).json({message: "Endereço deletado com sucesso"});
+            return res.status(200).json({ message: "Endereço deletado com sucesso" });
         } catch (e: any) {
-            return res.status(500).json({message: e.message});
+            return res.status(500).json({ message: e.message });
         }
     }
 }
