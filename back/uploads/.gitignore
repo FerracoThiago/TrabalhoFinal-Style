@@ -10,3 +10,8 @@
 !videos/.gitkeep
 !audios/
 !audios/.gitkeep
+
+# Allow image files to be uploaded
+!photos/*.jpg
+!photos/*.jpeg
+!photos/*.png
