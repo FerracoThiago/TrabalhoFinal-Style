@@ -27,7 +27,16 @@ export class AuthController {
                     hash,
                     salt,
                     notifications: false,
+                    cart: {
+                        create: {
+                            total: 0,
+                            subtotal: 0,
+                            savings: 0,
+                            shipping: 0
+                        }
+                    }
                 },
+                include: { cart: true }
             });
 
             const { hash: _, salt: __, ...userWithoutSensitive } = user;
