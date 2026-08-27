@@ -2,12 +2,13 @@ import { Router } from "express";
 import { photoUpload } from "../config/uploads";
 import { AuthController } from "../controllers/AuthController";
 import { CartController } from "../controllers/CartController";
+import { CouponController } from "../controllers/CouponController";
+import { ProductController } from "../controllers/ProductController";
 import { UserController } from "../controllers/UserController";
 import { VariantController } from "../controllers/VariantController";
 import { authMiddleware } from "../middlewares/authMiddleware";
-import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
-import { ProductController } from "../controllers/ProductController";
 import { validateCreateProduct, validateUpdateProduct } from "../middlewares/productMiddleware";
+import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
 import { AddressController } from "../controllers/AddressController";
 import { OrderController } from "../controllers/OrderController";
 
@@ -29,6 +30,7 @@ router.post("/cart", authMiddleware, CartController.createCart);
 router.get("/cart", authMiddleware, CartController.readCart);
 router.put("/cart", authMiddleware, CartController.updateCart);
 router.delete("/cart/clear", authMiddleware, CartController.deleteAllItemsInCart);
+
 /*Variant Controller*/
 router.post("/variant", authMiddleware, validateCreateVariant, VariantController.createVariant);
 router.get("/variant/:id", VariantController.readVariant);
@@ -43,6 +45,14 @@ router.get("/product", ProductController.readAllProducts);
 router.put("/product/:id", validateUpdateProduct, ProductController.updateProduct);
 router.delete("/product/:id", ProductController.deleteProduct);
 router.post("/product/:id/image", photoUpload.array("photos", 5), ProductController.setProductImage);
+
+/*Coupon Controller */
+router.post("/coupon",CouponController.createCoupon);
+router.get("/coupon/:couponId",CouponController.readCoupon);
+router.get("/coupon",CouponController.readAllCoupons);
+router.put("/coupon/:couponId",CouponController.updateCoupon);
+router.put("/coupon2user", authMiddleware,CouponController.sendCouponToUser);
+router.delete("/coupon/:couponId",CouponController.deleteCoupon);
 
 /*Address Controller*/
 router.post("/address", authMiddleware, AddressController.createAddress);
