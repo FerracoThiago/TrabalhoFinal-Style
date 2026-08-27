@@ -17,7 +17,7 @@ export class ProductController {
                     tags,
                     category,
                     inStock,
-                    images: { // necessário para criar várias imagens associadas ao produto
+                    images: {
                         create: photoPaths.map((file: any) => ({
                             fileName: file.path
                         }))
@@ -100,6 +100,37 @@ export class ProductController {
             const productId = Number(req.params.id);
             await prisma.product.delete({ where: { id: productId } });
             return res.status(200).json({ message: "Produto deletado com sucesso" });
+        }
+        catch (e: any) {
+            return res.status(500).json({ message: e.message });
+        }
+    }
+
+    public static async setProductImage(req: Request, res: Response) {
+        try {
+            const productId = Number(req.params.id);
+            const photoPaths = (req.files as Express.Multer.File[]).slice(0, 5);
+
+            if (!photoPaths || photoPaths.length === 0) {
+                return res.status(404).json({ message: "imagem não encontrada" });
+            }
+
+            const product = await prisma.product.findUnique({
+                where: { id: productId }
+            });
+
+            if (!product) {
+                return res.status(404).json({ message: "produto não encontrado" });
+            }
+
+            await prisma.productImage.createMany({
+                data: photoPaths.map((file: any) => ({
+                    fileName: file.filename,
+                    productId: productId
+                }))
+            });
+
+            return res.status(200).json({ message: "foto do produto cadastrada com sucesso!" });
         }
         catch (e: any) {
             return res.status(500).json({ message: e.message });
