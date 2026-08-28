@@ -33,7 +33,7 @@ export class ReviewController{
     public static async readReview(req:Request,res:Response){
         //informação pública, não necessita autenticar usuario
         try {
-            const reviewId = Number(req.params);
+            const reviewId = Number(req.params.reviewId);
             const foundReview = await prisma.review.findUnique({where:{id:reviewId}});
             if(!foundReview)
                 res.status(404).json({message:"Avaliação não encontrada"});
@@ -63,7 +63,7 @@ export class ReviewController{
     public static async readAllReviewsFromProduct(req:Request,res:Response){
     //informação pública, não necessita autenticar usuario
     try {
-        const productId = Number(req.params);
+        const productId = Number(req.params.productId);
         const foundReviews = await prisma.review.findMany({where:{productId:productId}});
         if(!foundReviews)
             res.status(404).json({message:"Produto não existe ou não tem avaliações"});
@@ -102,7 +102,7 @@ export class ReviewController{
         //Apenas o usuario pode apagar suas reviews
         try {
             const userId = Number(res.locals.user.id);
-            const reviewId = Number(req.params);
+            const reviewId = Number(req.params.reviewId);
 
             const deletedReview = await prisma.review.delete({where:{id:reviewId,userId:userId}});
             return res.status(200).json({deletedReview});

@@ -11,6 +11,7 @@ import { UserController } from "../controllers/UserController";
 import { VariantController } from "../controllers/VariantController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { validateCreateProduct, validateUpdateProduct } from "../middlewares/productMiddleware";
+import { validateCreateReview, validateUpdateReview } from "../middlewares/reviewMiddleware";
 import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
 
 const router = Router();
@@ -69,11 +70,11 @@ router.put("/order/:id", OrderController.updateOrder);
 router.delete("/order/:id", OrderController.deleteOrder);
 
 /*Review Controller */
-router.post("/review",authMiddleware,ReviewController.createReview);
+router.post("/review",authMiddleware,validateCreateReview,ReviewController.createReview);
 router.get("/review/:reviewId", ReviewController.readReview);
 router.get("/review",ReviewController.readAllReviews);
-router.get("review/product/:productId", ReviewController.readAllReviewsFromProduct);
-router.put("/review", authMiddleware, ReviewController.updateReview);
-router.delete("/review", authMiddleware, ReviewController.deleteReview);
+router.get("/review/product/:productId", ReviewController.readAllReviewsFromProduct);
+router.put("/review", authMiddleware, validateUpdateReview,ReviewController.updateReview);
+router.delete("/review/:reviewId", authMiddleware, ReviewController.deleteReview);
 
 export default router;
