@@ -19,8 +19,8 @@ interface Product {
   name: string;
   price: number;
   discount?: number;
-  avgReview?: number;
   tags: string[];
+  images: { fileName: string }[];
 }
 
 export const Home: React.FC = () => {
@@ -101,6 +101,7 @@ export const Home: React.FC = () => {
                 price={product.price}
                 discount={product.discount}
                 tags={product.tags}
+                images={product.images}
               />
             ))}
           </div>
