@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 export const Hero: React.FC = () => {
   return (
-    <section className="w-full bg-gray-50 py-16 sm:py-24 px-4">
+    <section className="w-full bg-gray-50 py-24 sm:py-32 px-4">
       <div className="max-w-[390px] sm:max-w-md mx-auto text-center">
         <h1 className="text-3xl sm:text-5xl font-bold text-black mb-4">
           Style Redefined
