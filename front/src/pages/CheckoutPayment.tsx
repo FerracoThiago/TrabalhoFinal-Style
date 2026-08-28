@@ -22,32 +22,37 @@ export const CheckoutPayment: React.FC = () => {
   const navigate = useNavigate();
 
   const {
-    shipping,
-    payment,
-    setPayment,
-    shippingMethod,
+    shippingData,
+    paymentData,
+    setPaymentData,
   } = useCheckout();
 
   const currentStep = 2;
 
+  const [cardNumber, setCardNumber] = useState('');
+  const [cvv, setCvv] = useState('');
   const [error, setError] = useState('');
+
+  const shippingMethod = shippingData.shippingMethod;
 
   const handleReviewOrder = (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-
     setError('');
 
-    // Impede acesso ao pagamento sem preencher o Shipping
+    /*
+     * Verifica se os dados obrigatórios do Shipping
+     * foram preenchidos antes de continuar.
+     */
     const requiredShippingFields = [
-      shipping.firstName,
-      shipping.lastName,
-      shipping.email,
-      shipping.address,
-      shipping.city,
-      shipping.state,
-      shipping.zipCode,
+      shippingData.firstName,
+      shippingData.lastName,
+      shippingData.email,
+      shippingData.address,
+      shippingData.city,
+      shippingData.state,
+      shippingData.zipCode,
     ];
 
     const hasEmptyShippingField =
@@ -56,22 +61,49 @@ export const CheckoutPayment: React.FC = () => {
       );
 
     if (hasEmptyShippingField) {
-      navigate('/checkout-shipping');
+      navigate('/checkout');
       return;
     }
 
-    // Validação dos dados de pagamento
+    /*
+     * Validação do cartão.
+     */
+    const cleanCardNumber = cardNumber.replace(/\D/g, '');
+    const cleanCvv = cvv.replace(/\D/g, '');
+
     if (
-      !payment.cardNumber.trim() ||
-      !payment.expiryDate.trim() ||
-      !payment.cvv.trim() ||
-      !payment.nameOnCard.trim()
+      !cleanCardNumber ||
+      !paymentData.expiryDate.trim() ||
+      !cleanCvv ||
+      !paymentData.nameOnCard.trim()
     ) {
       setError(
         'Please fill in all required payment fields.'
       );
       return;
     }
+
+    /*
+     * Validação básica do cartão.
+     * Aceita cartões entre 13 e 19 dígitos.
+     */
+    if (
+      cleanCardNumber.length < 13 ||
+      cleanCardNumber.length > 19
+    ) {
+      setError('Please enter a valid card number.');
+      return;
+    }
+
+    /*
+     * Guarda somente os últimos 4 dígitos no Context.
+     * O número completo e o CVV permanecem somente
+     * no estado local desta tela.
+     */
+    setPaymentData({
+      ...paymentData,
+      cardLastFour: cleanCardNumber.slice(-4),
+    });
 
     navigate('/checkout-review');
   };
@@ -83,9 +115,7 @@ export const CheckoutPayment: React.FC = () => {
         <div className="max-w-[1240px] mx-auto px-4 py-4 flex items-center">
           <button
             type="button"
-            onClick={() =>
-              navigate('/checkout-shipping')
-            }
+            onClick={() => navigate('/checkout')}
             className="p-1 text-black hover:opacity-70 transition-opacity flex items-center cursor-pointer outline-none focus:outline-none"
             aria-label="Voltar para Shipping"
           >
@@ -130,12 +160,9 @@ export const CheckoutPayment: React.FC = () => {
                 icon={
                   <CreditCard className="w-4 h-4" />
                 }
-                value={payment.cardNumber}
+                value={cardNumber}
                 onChange={(e) =>
-                  setPayment({
-                    ...payment,
-                    cardNumber: e.target.value,
-                  })
+                  setCardNumber(e.target.value)
                 }
               />
 
@@ -147,10 +174,10 @@ export const CheckoutPayment: React.FC = () => {
                   icon={
                     <CreditCard className="w-4 h-4" />
                   }
-                  value={payment.expiryDate}
+                  value={paymentData.expiryDate}
                   onChange={(e) =>
-                    setPayment({
-                      ...payment,
+                    setPaymentData({
+                      ...paymentData,
                       expiryDate: e.target.value,
                     })
                   }
@@ -159,13 +186,12 @@ export const CheckoutPayment: React.FC = () => {
                 <Input
                   label="CVV *"
                   placeholder="123"
-                  icon={<Lock className="w-4 h-4" />}
-                  value={payment.cvv}
+                  icon={
+                    <Lock className="w-4 h-4" />
+                  }
+                  value={cvv}
                   onChange={(e) =>
-                    setPayment({
-                      ...payment,
-                      cvv: e.target.value,
-                    })
+                    setCvv(e.target.value)
                   }
                 />
               </div>
@@ -174,11 +200,13 @@ export const CheckoutPayment: React.FC = () => {
               <Input
                 label="Name on Card *"
                 placeholder="Name on card"
-                icon={<User className="w-4 h-4" />}
-                value={payment.nameOnCard}
+                icon={
+                  <User className="w-4 h-4" />
+                }
+                value={paymentData.nameOnCard}
                 onChange={(e) =>
-                  setPayment({
-                    ...payment,
+                  setPaymentData({
+                    ...paymentData,
                     nameOnCard: e.target.value,
                   })
                 }
@@ -193,8 +221,8 @@ export const CheckoutPayment: React.FC = () => {
                 <button
                   type="button"
                   onClick={() =>
-                    setPayment({
-                      ...payment,
+                    setPaymentData({
+                      ...paymentData,
                       billingAddress: 'same',
                     })
                   }
@@ -202,12 +230,13 @@ export const CheckoutPayment: React.FC = () => {
                 >
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
-                      payment.billingAddress === 'same'
+                      paymentData.billingAddress ===
+                      'same'
                         ? 'border-black bg-black'
                         : 'border-gray-300 bg-white'
                     }`}
                   >
-                    {payment.billingAddress ===
+                    {paymentData.billingAddress ===
                       'same' && (
                       <div className="w-1.5 h-1.5 bg-white rounded-full" />
                     )}
@@ -221,8 +250,8 @@ export const CheckoutPayment: React.FC = () => {
                 <button
                   type="button"
                   onClick={() =>
-                    setPayment({
-                      ...payment,
+                    setPaymentData({
+                      ...paymentData,
                       billingAddress: 'different',
                     })
                   }
@@ -230,13 +259,13 @@ export const CheckoutPayment: React.FC = () => {
                 >
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
-                      payment.billingAddress ===
+                      paymentData.billingAddress ===
                       'different'
                         ? 'border-black bg-black'
                         : 'border-gray-300 bg-white'
                     }`}
                   >
-                    {payment.billingAddress ===
+                    {paymentData.billingAddress ===
                       'different' && (
                       <div className="w-1.5 h-1.5 bg-white rounded-full" />
                     )}

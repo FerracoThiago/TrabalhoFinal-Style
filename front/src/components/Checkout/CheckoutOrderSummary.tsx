@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Lock, RotateCcw } from 'lucide-react';
 
+import { useCheckout } from './CheckoutContext';
+
 interface CheckoutOrderItem {
   id: number;
   name: string;
@@ -18,18 +20,96 @@ interface CheckoutOrderSummaryProps {
   subtotal?: number;
   savings?: number;
   tax?: number;
-  shippingMethod: 'standard' | 'express' | 'overnight';
+  shippingMethod?: 'standard' | 'express' | 'overnight';
 }
 
 export const CheckoutOrderSummary: React.FC<
   CheckoutOrderSummaryProps
 > = ({
-  items = [],
-  subtotal = 0,
-  savings = 0,
-  tax = 0,
-  shippingMethod,
+  items,
+  subtotal,
+  savings,
+  tax,
+  shippingMethod: shippingMethodProp,
 }) => {
+  const {
+    shippingData,
+    cartItems,
+  } = useCheckout();
+
+  /*
+   * O checkout deve sempre trabalhar com os dados
+   * atuais do carrinho.
+   *
+   * As props continuam sendo aceitas para não quebrar
+   * os componentes que já utilizam este componente.
+   */
+
+  const finalItems = items ?? cartItems ?? [];
+
+  /*
+   * Calcula o subtotal diretamente dos produtos atuais.
+   *
+   * Isso garante que:
+   * quantidade 1 -> quantidade 2
+   * quantidade 2 -> quantidade 3
+   *
+   * atualize o resumo automaticamente.
+   */
+  const calculatedSubtotal = finalItems.reduce(
+    (total, item) =>
+      total + item.price * item.quantity,
+    0
+  );
+
+  /*
+   * Se o subtotal vier explicitamente por props,
+   * mantém compatibilidade.
+   *
+   * Porém, quando o componente está sendo usado no
+   * checkout, os itens do Context são a fonte principal.
+   */
+  const finalSubtotal =
+    items !== undefined
+      ? subtotal ?? calculatedSubtotal
+      : calculatedSubtotal;
+
+  /*
+   * Calcula as economias a partir dos itens atuais.
+   */
+  const calculatedSavings = finalItems.reduce(
+    (total, item) => {
+      if (
+        item.oldPrice !== undefined &&
+        item.oldPrice > item.price
+      ) {
+        return (
+          total +
+          (item.oldPrice - item.price) *
+            item.quantity
+        );
+      }
+
+      return total;
+    },
+    0
+  );
+
+  const finalSavings =
+    items !== undefined
+      ? savings ?? calculatedSavings
+      : calculatedSavings;
+
+  const finalTax = tax ?? 0;
+
+  /*
+   * O frete depende exclusivamente do método
+   * escolhido no checkout.
+   */
+  const shippingMethod =
+    shippingMethodProp ??
+    shippingData.shippingMethod;
+
   const shippingCosts: Record<
     'standard' | 'express' | 'overnight',
     number
@@ -39,11 +119,23 @@ export const CheckoutOrderSummary: React.FC<
     overnight: 24.99,
   };
 
-  const shipping = shippingCosts[shippingMethod];
+  const shipping =
+    shippingCosts[shippingMethod];
 
+  /*
+   * Total:
+   *
+   * subtotal
+   * - savings
+   * + tax
+   * + shipping
+   */
   const total = Math.max(
     0,
-    subtotal - Math.abs(savings) + shipping + tax
+    finalSubtotal -
+      finalSavings +
+      finalTax +
+      shipping
   );
 
   return (
@@ -53,8 +145,8 @@ export const CheckoutOrderSummary: React.FC<
       </h2>
 
       <div className="space-y-4 mb-6">
-        {items.length > 0 ? (
-          items.map((item) => (
+        {finalItems.length > 0 ? (
+          finalItems.map((item) => (
             <div
               key={item.id}
               className="flex items-center space-x-3"
@@ -79,7 +171,8 @@ export const CheckoutOrderSummary: React.FC<
                 </h4>
 
                 <p className="text-[11px] text-gray-500">
-                  {item.size} • {item.color} • Qty: {item.quantity}
+                  {item.size} • {item.color} • Qty:{' '}
+                  {item.quantity}
                 </p>
 
                 <div className="flex items-center space-x-2 mt-0.5">
@@ -109,7 +202,7 @@ export const CheckoutOrderSummary: React.FC<
           <span>Subtotal</span>
 
           <span className="font-medium text-black">
-            ${subtotal.toFixed(2)}
+            ${finalSubtotal.toFixed(2)}
           </span>
         </div>
 
@@ -117,7 +210,7 @@ export const CheckoutOrderSummary: React.FC<
           <span>Savings</span>
 
           <span className="font-medium">
-            -${Math.abs(savings).toFixed(2)}
+            -${Math.abs(finalSavings).toFixed(2)}
           </span>
         </div>
 
@@ -135,7 +228,7 @@ export const CheckoutOrderSummary: React.FC<
           <span>Tax</span>
 
           <span className="font-medium text-black">
-            ${tax.toFixed(2)}
+            ${finalTax.toFixed(2)}
           </span>
         </div>
       </div>

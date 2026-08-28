@@ -1,22 +1,17 @@
 import React from 'react';
-
 import { useNavigate } from 'react-router-dom';
-
 import { CheckoutSteps } from '../components/Checkout/CheckoutSteps';
-
 import { CheckoutOrderSummary } from '../components/Checkout/CheckoutOrderSummary';
-
 import { useCheckout } from '../components/Checkout/CheckoutContext';
-
 import { ArrowLeft, Lock } from 'lucide-react';
 
 export const CheckoutReview: React.FC = () => {
   const navigate = useNavigate();
 
   const {
-    shipping,
-    payment,
-    shippingMethod,
+    shippingData,
+    paymentData,
+    shippingCost,
   } = useCheckout();
 
   const currentStep = 3;
@@ -26,59 +21,62 @@ export const CheckoutReview: React.FC = () => {
   ) => {
     e.preventDefault();
 
-    // Não permite finalizar o pedido sem os dados obrigatórios
+    // Verifica se os dados de Shipping existem
     const requiredShippingFields = [
-      shipping.firstName,
-      shipping.lastName,
-      shipping.email,
-      shipping.address,
-      shipping.city,
-      shipping.state,
-      shipping.zipCode,
+      shippingData.firstName,
+      shippingData.lastName,
+      shippingData.email,
+      shippingData.address,
+      shippingData.city,
+      shippingData.state,
+      shippingData.zipCode,
     ];
 
     const hasEmptyShippingField =
       requiredShippingFields.some(
-        (field) => !field.trim()
+        (field) => !field || !field.trim()
       );
 
-    const hasEmptyPaymentField =
-      !payment.cardNumber.trim() ||
-      !payment.expiryDate.trim() ||
-      !payment.cvv.trim() ||
-      !payment.nameOnCard.trim();
-
     if (hasEmptyShippingField) {
-      navigate('/checkout-shipping');
+      navigate('/checkout');
       return;
     }
+
+    // Verifica se os dados de Payment existem
+    const hasEmptyPaymentField =
+      !paymentData.cardLastFour ||
+      !paymentData.expiryDate ||
+      !paymentData.nameOnCard;
 
     if (hasEmptyPaymentField) {
       navigate('/checkout-payment');
       return;
     }
 
-    navigate('/checkout-success');
+    // Pedido finalizado
+    window.alert('Order placed successfully!');
+
+    navigate('/home');
   };
 
   const getShippingMethodLabel = () => {
-    switch (shippingMethod) {
+    switch (shippingData.shippingMethod) {
       case 'express':
         return 'Express Shipping - 2-3 business days';
 
       case 'overnight':
         return 'Overnight Shipping - Next business day';
 
+      case 'standard':
       default:
         return 'Standard Shipping - 5-7 business days';
     }
   };
 
   const maskedCardNumber =
-    payment.cardNumber.length >= 4
-      ? `•••• •••• •••• ${payment.cardNumber
-          .replace(/\s/g, '')
-          .slice(-4)}`
+    paymentData.cardLastFour &&
+    paymentData.cardLastFour.length > 0
+      ? `•••• •••• •••• ${paymentData.cardLastFour}`
       : 'Card information not available';
 
   return (
@@ -88,11 +86,9 @@ export const CheckoutReview: React.FC = () => {
         <div className="max-w-[1240px] mx-auto px-4 py-4 flex items-center">
           <button
             type="button"
-            onClick={() =>
-              navigate('/checkout-payment')
-            }
+            onClick={() => navigate('/checkout-payment')}
             className="p-1 text-black hover:opacity-70 transition-opacity flex items-center cursor-pointer outline-none focus:outline-none"
-            aria-label="Voltar"
+            aria-label="Voltar para Payment"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -132,42 +128,40 @@ export const CheckoutReview: React.FC = () => {
                     </p>
 
                     <p className="text-gray-600">
-                      {shipping.firstName}{' '}
-                      {shipping.lastName}
+                      {shippingData.firstName}{' '}
+                      {shippingData.lastName}
                     </p>
 
                     <p className="text-gray-600">
-                      {shipping.address}
+                      {shippingData.address}
                     </p>
 
-                    {shipping.apartment && (
+                    {shippingData.apartment && (
                       <p className="text-gray-600">
-                        {shipping.apartment}
+                        {shippingData.apartment}
                       </p>
                     )}
 
                     <p className="text-gray-600">
-                      {shipping.city},{' '}
-                      {shipping.state}{' '}
-                      {shipping.zipCode}
+                      {shippingData.city},{' '}
+                      {shippingData.state}{' '}
+                      {shippingData.zipCode}
                     </p>
 
                     <p className="text-gray-600">
-                      {shipping.email}
+                      {shippingData.email}
                     </p>
 
-                    {shipping.phone && (
+                    {shippingData.phone && (
                       <p className="text-gray-600">
-                        {shipping.phone}
+                        {shippingData.phone}
                       </p>
                     )}
                   </div>
 
                   <button
                     type="button"
-                    onClick={() =>
-                      navigate('/checkout-shipping')
-                    }
+                    onClick={() => navigate('/checkout')}
                     className="font-medium text-black hover:underline cursor-pointer"
                   >
                     Edit
@@ -187,6 +181,14 @@ export const CheckoutReview: React.FC = () => {
 
                     <p className="text-gray-600">
                       Credit Card
+                    </p>
+
+                    <p className="text-gray-600">
+                      {paymentData.nameOnCard}
+                    </p>
+
+                    <p className="text-gray-600">
+                      Expiry: {paymentData.expiryDate}
                     </p>
                   </div>
 
@@ -210,6 +212,13 @@ export const CheckoutReview: React.FC = () => {
                   <p className="text-gray-600">
                     {getShippingMethodLabel()}
                   </p>
+
+                  <p className="text-gray-600">
+                    Shipping cost:{' '}
+                    {shippingCost === 0
+                      ? 'Free'
+                      : `$${shippingCost.toFixed(2)}`}
+                  </p>
                 </div>
               </div>
 
@@ -230,7 +239,7 @@ export const CheckoutReview: React.FC = () => {
           {/* Order Summary */}
           <div className="mt-6 lg:mt-0 lg:sticky lg:top-6">
             <CheckoutOrderSummary
-              shippingMethod={shippingMethod}
+              shippingMethod={shippingData.shippingMethod}
             />
           </div>
         </div>
