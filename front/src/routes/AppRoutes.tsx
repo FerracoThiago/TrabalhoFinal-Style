@@ -8,6 +8,7 @@ import { Login } from '../pages/Login';
 import { Cart } from '../pages/Cart';
 import { Home } from '../pages/Home';
 import { CheckoutShipping } from '../pages/CheckoutShipping';
+import { CheckoutPayment } from '../pages/CheckoutPayment';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -44,6 +45,11 @@ export const AppRoutes: React.FC = () => {
           <Route
             path="/checkout-shipping"
             element={<CheckoutShipping />}
+          />
+
+          <Route
+            path="/checkout-payment"
+            element={<CheckoutPayment />}
           />
 
           <Route

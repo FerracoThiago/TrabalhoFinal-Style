@@ -50,15 +50,15 @@ export const CheckoutShipping: React.FC = () => {
       </div>
 
       <main className="flex-1 w-full pb-16 px-4">
-        <div className="max-w-md mx-auto space-y-6">
+        <div className="max-w-[1120px] mx-auto lg:grid lg:grid-cols-[1fr_420px] lg:gap-12 items-start">
           <form onSubmit={handleContinueToPayment} className="space-y-6">
-            <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
               <div className="flex items-center space-x-2 pb-2 border-b border-gray-100">
                 <MapPin className="w-4 h-4 text-black" />
                 <h2 className="text-sm font-bold text-black">Shipping Information</h2>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="First Name *"
                   placeholder="First name"
@@ -107,13 +107,29 @@ export const CheckoutShipping: React.FC = () => {
                 onChange={(e) => setApartment(e.target.value)}
               />
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-4">
                 <Input
                   label="City *"
                   placeholder="City"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                 />
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">State *</label>
+                  <div className="relative">
+                    <select
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                      className="w-full h-11 px-3 bg-white border border-gray-300 rounded-xl text-sm text-black focus:outline-none focus:ring-0 appearance-none"
+                    >
+                      <option value="">Select state</option>
+                      <option value="NY">New York</option>
+                      <option value="CA">California</option>
+                      <option value="TX">Texas</option>
+                    </select>
+                    <Globe className="absolute right-3 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
                 <Input
                   label="ZIP Code *"
                   placeholder="ZIP code"
@@ -121,26 +137,9 @@ export const CheckoutShipping: React.FC = () => {
                   onChange={(e) => setZipCode(e.target.value)}
                 />
               </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">State *</label>
-                <div className="relative">
-                  <select
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    className="w-full h-11 px-3 bg-white border border-gray-300 rounded-xl text-sm text-black focus:outline-none focus:ring-0 appearance-none"
-                  >
-                    <option value="">Select state</option>
-                    <option value="NY">New York</option>
-                    <option value="CA">California</option>
-                    <option value="TX">Texas</option>
-                  </select>
-                  <Globe className="absolute right-3 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
-                </div>
-              </div>
             </div>
 
-            <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-black">Shipping Method</h3>
 
               <div className="space-y-3">
@@ -216,7 +215,9 @@ export const CheckoutShipping: React.FC = () => {
             </div>
           </form>
 
-          <CheckoutOrderSummary shippingMethod={shippingMethod} />
+          <div className="mt-6 lg:mt-0 lg:sticky lg:top-6">
+            <CheckoutOrderSummary shippingMethod={shippingMethod} />
+          </div>
         </div>
       </main>
     </div>
