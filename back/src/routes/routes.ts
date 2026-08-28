@@ -10,6 +10,7 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 import { validateCreateProduct, validateUpdateProduct } from "../middlewares/productMiddleware";
 import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
 import { AddressController } from "../controllers/AddressController";
+import { OrderController } from "../controllers/OrderController";
 
 const router = Router();
 
@@ -43,6 +44,7 @@ router.get("/product/:id", ProductController.readProduct);
 router.get("/product", ProductController.readAllProducts);
 router.put("/product/:id", validateUpdateProduct, ProductController.updateProduct);
 router.delete("/product/:id", ProductController.deleteProduct);
+router.post("/product/:id/image", photoUpload.array("photos", 5), ProductController.setProductImage);
 
 /*Coupon Controller */
 router.post("/coupon",CouponController.createCoupon);
@@ -57,5 +59,12 @@ router.post("/address", authMiddleware, AddressController.createAddress);
 router.get("/address", authMiddleware, AddressController.readAddresses);
 router.put("/address/:id", authMiddleware, AddressController.updateAddress);
 router.delete("/address/:id", authMiddleware, AddressController.deleteAddress);
+
+/*Order Controller*/
+router.post("/order", authMiddleware, OrderController.createOrder);
+router.get("/order/:id", OrderController.readOrder);
+router.get("/order", OrderController.readAllOrders);
+router.put("/order/:id", OrderController.updateOrder);
+router.delete("/order/:id", OrderController.deleteOrder);
 
 export default router;

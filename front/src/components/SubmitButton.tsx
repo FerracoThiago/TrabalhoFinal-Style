@@ -12,7 +12,7 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({ children, onClick, d
       type="submit"
       onClick={onClick}
       disabled={disabled}
-      className="w-full h-12 bg-black text-white font-medium text-md rounded-xl hover:bg-gray-900 transition-colors mt-4 disabled:opacity-50"
+      className="w-full h-12 bg-black text-white font-medium text-sm rounded-xl hover:bg-gray-900 transition-colors mt-4 disabled:opacity-50"
     >
       {children}
     </button>
