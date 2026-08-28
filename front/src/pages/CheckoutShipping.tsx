@@ -26,13 +26,22 @@ export const CheckoutShipping: React.FC = () => {
   const navigate = useNavigate();
 
   const {
-    shipping,
-    setShipping,
-    shippingMethod,
-    setShippingMethod,
+    shippingData,
+    setShippingData,
   } = useCheckout();
 
   const currentStep = 1;
+
+  const shippingMethod = shippingData.shippingMethod;
+
+  const setShippingMethod = (
+    method: 'standard' | 'express' | 'overnight'
+  ) => {
+    setShippingData({
+      ...shippingData,
+      shippingMethod: method,
+    });
+  };
 
   const handleContinueToPayment = (
     e: React.FormEvent<HTMLFormElement>
@@ -40,13 +49,13 @@ export const CheckoutShipping: React.FC = () => {
     e.preventDefault();
 
     const requiredFields = [
-      shipping.firstName,
-      shipping.lastName,
-      shipping.email,
-      shipping.address,
-      shipping.city,
-      shipping.state,
-      shipping.zipCode,
+      shippingData.firstName,
+      shippingData.lastName,
+      shippingData.email,
+      shippingData.address,
+      shippingData.city,
+      shippingData.state,
+      shippingData.zipCode,
     ];
 
     const hasEmptyField = requiredFields.some(
@@ -114,10 +123,10 @@ export const CheckoutShipping: React.FC = () => {
                   label="First Name *"
                   placeholder="First name"
                   icon={<User className="w-4 h-4" />}
-                  value={shipping.firstName}
+                  value={shippingData.firstName}
                   onChange={(e) =>
-                    setShipping({
-                      ...shipping,
+                    setShippingData({
+                      ...shippingData,
                       firstName: e.target.value,
                     })
                   }
@@ -126,10 +135,10 @@ export const CheckoutShipping: React.FC = () => {
                 <Input
                   label="Last Name *"
                   placeholder="Last name"
-                  value={shipping.lastName}
+                  value={shippingData.lastName}
                   onChange={(e) =>
-                    setShipping({
-                      ...shipping,
+                    setShippingData({
+                      ...shippingData,
                       lastName: e.target.value,
                     })
                   }
@@ -142,10 +151,10 @@ export const CheckoutShipping: React.FC = () => {
                 type="email"
                 placeholder="Enter your email"
                 icon={<Mail className="w-4 h-4" />}
-                value={shipping.email}
+                value={shippingData.email}
                 onChange={(e) =>
-                  setShipping({
-                    ...shipping,
+                  setShippingData({
+                    ...shippingData,
                     email: e.target.value,
                   })
                 }
@@ -156,10 +165,10 @@ export const CheckoutShipping: React.FC = () => {
                 label="Phone Number"
                 placeholder="Phone number"
                 icon={<Phone className="w-4 h-4" />}
-                value={shipping.phone}
+                value={shippingData.phone}
                 onChange={(e) =>
-                  setShipping({
-                    ...shipping,
+                  setShippingData({
+                    ...shippingData,
                     phone: e.target.value,
                   })
                 }
@@ -170,10 +179,10 @@ export const CheckoutShipping: React.FC = () => {
                 label="Address *"
                 placeholder="Street address"
                 icon={<MapPin className="w-4 h-4" />}
-                value={shipping.address}
+                value={shippingData.address}
                 onChange={(e) =>
-                  setShipping({
-                    ...shipping,
+                  setShippingData({
+                    ...shippingData,
                     address: e.target.value,
                   })
                 }
@@ -184,10 +193,10 @@ export const CheckoutShipping: React.FC = () => {
                 label="Apartment, suite, etc. (optional)"
                 placeholder="Apartment, suite, unit, etc."
                 icon={<Building className="w-4 h-4" />}
-                value={shipping.apartment}
+                value={shippingData.apartment}
                 onChange={(e) =>
-                  setShipping({
-                    ...shipping,
+                  setShippingData({
+                    ...shippingData,
                     apartment: e.target.value,
                   })
                 }
@@ -198,10 +207,10 @@ export const CheckoutShipping: React.FC = () => {
                 <Input
                   label="City *"
                   placeholder="City"
-                  value={shipping.city}
+                  value={shippingData.city}
                   onChange={(e) =>
-                    setShipping({
-                      ...shipping,
+                    setShippingData({
+                      ...shippingData,
                       city: e.target.value,
                     })
                   }
@@ -214,18 +223,16 @@ export const CheckoutShipping: React.FC = () => {
 
                   <div className="relative">
                     <select
-                      value={shipping.state}
+                      value={shippingData.state}
                       onChange={(e) =>
-                        setShipping({
-                          ...shipping,
+                        setShippingData({
+                          ...shippingData,
                           state: e.target.value,
                         })
                       }
                       className="w-full h-11 px-3 bg-white border border-gray-300 rounded-xl text-sm text-black focus:outline-none focus:ring-0 appearance-none"
                     >
-                      <option value="">
-                        Select state
-                      </option>
+                      <option value="">Select state</option>
 
                       <option value="NY">
                         New York
@@ -247,10 +254,10 @@ export const CheckoutShipping: React.FC = () => {
                 <Input
                   label="ZIP Code *"
                   placeholder="ZIP code"
-                  value={shipping.zipCode}
+                  value={shippingData.zipCode}
                   onChange={(e) =>
-                    setShipping({
-                      ...shipping,
+                    setShippingData({
+                      ...shippingData,
                       zipCode: e.target.value,
                     })
                   }
@@ -375,20 +382,6 @@ export const CheckoutShipping: React.FC = () => {
                     $24.99
                   </span>
                 </button>
-              </div>
-
-              {/* Salvar informações */}
-              <div className="pt-2">
-                <Checkbox
-                  checked={shipping.saveInfo}
-                  onChange={() =>
-                    setShipping({
-                      ...shipping,
-                      saveInfo: !shipping.saveInfo,
-                    })
-                  }
-                  label="Save this information for next time"
-                />
               </div>
 
               {/* Continuar */}

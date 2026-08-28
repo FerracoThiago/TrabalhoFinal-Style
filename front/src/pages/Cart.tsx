@@ -5,13 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 import { CartItem } from '../components/CartItem';
-
 import { PromoCode } from '../components/PromoCode';
-
 import { OrderSummary } from '../components/OrderSummary';
 
 import tshirtImage from '../assets/images/cart-tshirt.png';
-
 import jeansImage from '../assets/images/cart-jeans.png';
 
 interface ProductImage {
@@ -576,7 +573,6 @@ export const Cart: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-6 w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
-
             <PromoCode />
 
             <OrderSummary
@@ -586,13 +582,12 @@ export const Cart: React.FC = () => {
               shipping={calculatedShipping}
               total={calculatedTotal}
               onCheckout={() =>
-                navigate('/checkout/shipping')
+                navigate('/checkout-shipping')
               }
               onContinueShopping={() =>
                 navigate('/home')
               }
             />
-
           </div>
         </div>
       </div>

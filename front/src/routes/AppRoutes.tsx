@@ -18,67 +18,75 @@ import { CheckoutPayment } from '../pages/CheckoutPayment';
 
 import { CheckoutReview } from '../pages/CheckoutReview';
 
+import { CheckoutProvider } from '../components/Checkout/CheckoutContext';
+
 export const AppRoutes: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
 
       <main>
-        <Routes>
-          <Route
-            path="/"
-            element={<Navigate to="/login" replace />}
-          />
+        <CheckoutProvider>
+          <Routes>
+            {/* Página inicial */}
+            <Route
+              path="/"
+              element={<Navigate to="/login" replace />}
+            />
 
-          <Route
-            path="/cadastro"
-            element={<Cadastro />}
-          />
+            {/* Autenticação */}
+            <Route
+              path="/cadastro"
+              element={<Cadastro />}
+            />
 
-          <Route
-            path="/login"
-            element={<Login />}
-          />
+            <Route
+              path="/login"
+              element={<Login />}
+            />
 
-          <Route
-            path="/home"
-            element={<Home />}
-          />
+            {/* Home */}
+            <Route
+              path="/home"
+              element={<Home />}
+            />
 
-          <Route
-            path="/cart"
-            element={<Cart />}
-          />
+            {/* Carrinho */}
+            <Route
+              path="/cart"
+              element={<Cart />}
+            />
 
-          {/* Checkout - Step 1: Shipping */}
-          <Route
-            path="/checkout"
-            element={<CheckoutShipping />}
-          />
+            {/* Checkout - Step 1: Shipping */}
+            <Route
+              path="/checkout"
+              element={<CheckoutShipping />}
+            />
 
-          {/* Checkout - Step 1: Shipping - rota alternativa */}
-          <Route
-            path="/checkout-shipping"
-            element={<CheckoutShipping />}
-          />
+            <Route
+              path="/checkout-shipping"
+              element={<CheckoutShipping />}
+            />
 
-          {/* Checkout - Step 2: Payment */}
-          <Route
-            path="/checkout-payment"
-            element={<CheckoutPayment />}
-          />
+            {/* Checkout - Step 2: Payment */}
+            <Route
+              path="/checkout-payment"
+              element={<CheckoutPayment />}
+            />
 
-          {/* Checkout - Step 3: Review */}
-          <Route
-            path="/checkout-review"
-            element={<CheckoutReview />}
-          />
+            {/* Checkout - Step 3: Review */}
+            <Route
+              path="/checkout-review"
+              element={<CheckoutReview />}
+            />
 
-          <Route
-            path="*"
-            element={<Navigate to="/login" replace />}
-          />
-        </Routes>
+            {/* Rota não encontrada */}
+            <Route
+              path="*"
+              element={<Navigate to="/login" replace />}
+            />
+          </Routes>
+        </CheckoutProvider>
       </main>
     </div>
   );
