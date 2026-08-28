@@ -49,7 +49,7 @@ export const Cadastro: React.FC = () => {
           lastName,
           email,
           password,
-          notifications: newsletterAccepted ? 1 : 0,
+          notifications: newsletterAccepted ? true : false,
         }),
       });
 
