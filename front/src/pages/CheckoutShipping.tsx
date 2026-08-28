@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from '../components/Header';
 import { CheckoutSteps } from '../components/Checkout/CheckoutSteps';
 import { CheckoutOrderSummary } from '../components/Checkout/CheckoutOrderSummary';
 import { Input } from '../components/Input';
@@ -31,13 +30,11 @@ export const CheckoutShipping: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <Header />
-
       <div className="w-full border-b border-gray-100">
         <div className="max-w-[1240px] mx-auto px-4 py-4 flex items-center">
           <button
             onClick={() => navigate('/cart')}
-            className="p-1 text-black hover:opacity-70 transition-opacity flex items-center cursor-pointer"
+            className="p-1 text-black hover:opacity-70 transition-opacity flex items-center cursor-pointer outline-none focus:outline-none"
             aria-label="Voltar"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -131,7 +128,7 @@ export const CheckoutShipping: React.FC = () => {
                   <select
                     value={state}
                     onChange={(e) => setState(e.target.value)}
-                    className="w-full h-11 px-3 bg-white border border-gray-300 rounded-xl text-sm text-black focus:outline-none focus:border-black appearance-none"
+                    className="w-full h-11 px-3 bg-white border border-gray-300 rounded-xl text-sm text-black focus:outline-none focus:ring-0 appearance-none"
                   >
                     <option value="">Select state</option>
                     <option value="NY">New York</option>
@@ -147,71 +144,59 @@ export const CheckoutShipping: React.FC = () => {
               <h3 className="text-sm font-bold text-black">Shipping Method</h3>
 
               <div className="space-y-3">
-                <label
+                <div
                   onClick={() => setShippingMethod('standard')}
-                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                    shippingMethod === 'standard' ? 'border-black bg-gray-50/50' : 'border-gray-200'
-                  }`}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-xl cursor-pointer transition-all select-none bg-white"
                 >
                   <div className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="shippingMethod"
-                      checked={shippingMethod === 'standard'}
-                      onChange={() => setShippingMethod('standard')}
-                      className="accent-black w-4 h-4"
-                    />
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
+                      shippingMethod === 'standard' ? 'border-black bg-black text-white' : 'border-gray-300 bg-white'
+                    }`}>
+                      {shippingMethod === 'standard' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                    </div>
                     <div>
                       <p className="text-xs font-semibold text-black">Standard Shipping</p>
                       <p className="text-[11px] text-gray-500">5-7 business days</p>
                     </div>
                   </div>
                   <span className="text-xs font-semibold text-black">Free</span>
-                </label>
+                </div>
 
-                <label
+                <div
                   onClick={() => setShippingMethod('express')}
-                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                    shippingMethod === 'express' ? 'border-black bg-gray-50/50' : 'border-gray-200'
-                  }`}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-xl cursor-pointer transition-all select-none bg-white"
                 >
                   <div className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="shippingMethod"
-                      checked={shippingMethod === 'express'}
-                      onChange={() => setShippingMethod('express')}
-                      className="accent-black w-4 h-4"
-                    />
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
+                      shippingMethod === 'express' ? 'border-black bg-black text-white' : 'border-gray-300 bg-white'
+                    }`}>
+                      {shippingMethod === 'express' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                    </div>
                     <div>
                       <p className="text-xs font-semibold text-black">Express Shipping</p>
                       <p className="text-[11px] text-gray-500">2-3 business days</p>
                     </div>
                   </div>
                   <span className="text-xs font-semibold text-black">$9.99</span>
-                </label>
+                </div>
 
-                <label
+                <div
                   onClick={() => setShippingMethod('overnight')}
-                  className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${
-                    shippingMethod === 'overnight' ? 'border-black bg-gray-50/50' : 'border-gray-200'
-                  }`}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-xl cursor-pointer transition-all select-none bg-white"
                 >
                   <div className="flex items-center space-x-3">
-                    <input
-                      type="radio"
-                      name="shippingMethod"
-                      checked={shippingMethod === 'overnight'}
-                      onChange={() => setShippingMethod('overnight')}
-                      className="accent-black w-4 h-4"
-                    />
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
+                      shippingMethod === 'overnight' ? 'border-black bg-black text-white' : 'border-gray-300 bg-white'
+                    }`}>
+                      {shippingMethod === 'overnight' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                    </div>
                     <div>
                       <p className="text-xs font-semibold text-black">Overnight Shipping</p>
                       <p className="text-[11px] text-gray-500">Next business day</p>
                     </div>
                   </div>
                   <span className="text-xs font-semibold text-black">$24.99</span>
-                </label>
+                </div>
               </div>
 
               <div className="pt-2">
@@ -224,7 +209,7 @@ export const CheckoutShipping: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full h-12 bg-black text-white rounded-xl font-medium text-sm flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer mt-4"
+                className="w-full h-12 bg-black text-white rounded-xl font-medium text-sm flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer mt-4 outline-none focus:outline-none"
               >
                 Continue to Payment
               </button>

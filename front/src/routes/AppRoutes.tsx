@@ -7,6 +7,7 @@ import { Cadastro } from '../pages/Cadastro';
 import { Login } from '../pages/Login';
 import { Cart } from '../pages/Cart';
 import { Home } from '../pages/Home';
+import { CheckoutShipping } from '../pages/CheckoutShipping';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -38,6 +39,11 @@ export const AppRoutes: React.FC = () => {
           <Route
             path="/cart"
             element={<Cart />}
+          />
+
+          <Route
+            path="/checkout-shipping"
+            element={<CheckoutShipping />}
           />
 
           <Route
