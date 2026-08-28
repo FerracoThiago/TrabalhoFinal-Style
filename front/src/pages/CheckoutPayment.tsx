@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
 import { CheckoutSteps } from '../components/Checkout/CheckoutSteps';
+
 import { CheckoutOrderSummary } from '../components/Checkout/CheckoutOrderSummary';
+
 import { Input } from '../components/Input';
+
 import {
   ArrowLeft,
   CreditCard,
@@ -11,19 +16,19 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 
+import { useCheckout } from '../components/Checkout/CheckoutContext';
+
 export const CheckoutPayment: React.FC = () => {
   const navigate = useNavigate();
 
-  const [currentStep] = useState<number>(2);
+  const {
+    shipping,
+    payment,
+    setPayment,
+    shippingMethod,
+  } = useCheckout();
 
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [nameOnCard, setNameOnCard] = useState('');
-
-  const [billingAddress, setBillingAddress] = useState<
-    'same' | 'different'
-  >('same');
+  const currentStep = 2;
 
   const [error, setError] = useState('');
 
@@ -34,13 +39,37 @@ export const CheckoutPayment: React.FC = () => {
 
     setError('');
 
+    // Impede acesso ao pagamento sem preencher o Shipping
+    const requiredShippingFields = [
+      shipping.firstName,
+      shipping.lastName,
+      shipping.email,
+      shipping.address,
+      shipping.city,
+      shipping.state,
+      shipping.zipCode,
+    ];
+
+    const hasEmptyShippingField =
+      requiredShippingFields.some(
+        (field) => !field.trim()
+      );
+
+    if (hasEmptyShippingField) {
+      navigate('/checkout-shipping');
+      return;
+    }
+
+    // Validação dos dados de pagamento
     if (
-      !cardNumber.trim() ||
-      !expiryDate.trim() ||
-      !cvv.trim() ||
-      !nameOnCard.trim()
+      !payment.cardNumber.trim() ||
+      !payment.expiryDate.trim() ||
+      !payment.cvv.trim() ||
+      !payment.nameOnCard.trim()
     ) {
-      setError('Please fill in all required payment fields.');
+      setError(
+        'Please fill in all required payment fields.'
+      );
       return;
     }
 
@@ -54,7 +83,9 @@ export const CheckoutPayment: React.FC = () => {
         <div className="max-w-[1240px] mx-auto px-4 py-4 flex items-center">
           <button
             type="button"
-            onClick={() => navigate('/checkout-shipping')}
+            onClick={() =>
+              navigate('/checkout-shipping')
+            }
             className="p-1 text-black hover:opacity-70 transition-opacity flex items-center cursor-pointer outline-none focus:outline-none"
             aria-label="Voltar para Shipping"
           >
@@ -96,10 +127,15 @@ export const CheckoutPayment: React.FC = () => {
               <Input
                 label="Card Number *"
                 placeholder="1234 5678 9012 3456"
-                icon={<CreditCard className="w-4 h-4" />}
-                value={cardNumber}
+                icon={
+                  <CreditCard className="w-4 h-4" />
+                }
+                value={payment.cardNumber}
                 onChange={(e) =>
-                  setCardNumber(e.target.value)
+                  setPayment({
+                    ...payment,
+                    cardNumber: e.target.value,
+                  })
                 }
               />
 
@@ -108,10 +144,15 @@ export const CheckoutPayment: React.FC = () => {
                 <Input
                   label="Expiry Date *"
                   placeholder="MM/YY"
-                  icon={<CreditCard className="w-4 h-4" />}
-                  value={expiryDate}
+                  icon={
+                    <CreditCard className="w-4 h-4" />
+                  }
+                  value={payment.expiryDate}
                   onChange={(e) =>
-                    setExpiryDate(e.target.value)
+                    setPayment({
+                      ...payment,
+                      expiryDate: e.target.value,
+                    })
                   }
                 />
 
@@ -119,9 +160,12 @@ export const CheckoutPayment: React.FC = () => {
                   label="CVV *"
                   placeholder="123"
                   icon={<Lock className="w-4 h-4" />}
-                  value={cvv}
+                  value={payment.cvv}
                   onChange={(e) =>
-                    setCvv(e.target.value)
+                    setPayment({
+                      ...payment,
+                      cvv: e.target.value,
+                    })
                   }
                 />
               </div>
@@ -131,9 +175,12 @@ export const CheckoutPayment: React.FC = () => {
                 label="Name on Card *"
                 placeholder="Name on card"
                 icon={<User className="w-4 h-4" />}
-                value={nameOnCard}
+                value={payment.nameOnCard}
                 onChange={(e) =>
-                  setNameOnCard(e.target.value)
+                  setPayment({
+                    ...payment,
+                    nameOnCard: e.target.value,
+                  })
                 }
               />
 
@@ -145,17 +192,23 @@ export const CheckoutPayment: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => setBillingAddress('same')}
+                  onClick={() =>
+                    setPayment({
+                      ...payment,
+                      billingAddress: 'same',
+                    })
+                  }
                   className="w-full flex items-center space-x-3 cursor-pointer select-none text-left"
                 >
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
-                      billingAddress === 'same'
+                      payment.billingAddress === 'same'
                         ? 'border-black bg-black'
                         : 'border-gray-300 bg-white'
                     }`}
                   >
-                    {billingAddress === 'same' && (
+                    {payment.billingAddress ===
+                      'same' && (
                       <div className="w-1.5 h-1.5 bg-white rounded-full" />
                     )}
                   </div>
@@ -167,17 +220,24 @@ export const CheckoutPayment: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => setBillingAddress('different')}
+                  onClick={() =>
+                    setPayment({
+                      ...payment,
+                      billingAddress: 'different',
+                    })
+                  }
                   className="w-full flex items-center space-x-3 cursor-pointer select-none text-left"
                 >
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
-                      billingAddress === 'different'
+                      payment.billingAddress ===
+                      'different'
                         ? 'border-black bg-black'
                         : 'border-gray-300 bg-white'
                     }`}
                   >
-                    {billingAddress === 'different' && (
+                    {payment.billingAddress ===
+                      'different' && (
                       <div className="w-1.5 h-1.5 bg-white rounded-full" />
                     )}
                   </div>
@@ -197,7 +257,7 @@ export const CheckoutPayment: React.FC = () => {
                 </p>
               </div>
 
-              {/* Erro de validação */}
+              {/* Erro */}
               {error && (
                 <p
                   role="alert"
@@ -220,7 +280,7 @@ export const CheckoutPayment: React.FC = () => {
           {/* Order Summary */}
           <div className="mt-6 lg:mt-0 lg:sticky lg:top-6">
             <CheckoutOrderSummary
-              shippingMethod="standard"
+              shippingMethod={shippingMethod}
             />
           </div>
         </div>

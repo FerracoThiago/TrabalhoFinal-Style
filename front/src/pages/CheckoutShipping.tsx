@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
 import { CheckoutSteps } from '../components/Checkout/CheckoutSteps';
+
 import { CheckoutOrderSummary } from '../components/Checkout/CheckoutOrderSummary';
+
 import { Input } from '../components/Input';
+
 import { Checkbox } from '../components/Checkbox';
+
 import {
   ArrowLeft,
   User,
@@ -14,31 +20,45 @@ import {
   Globe,
 } from 'lucide-react';
 
+import { useCheckout } from '../components/Checkout/CheckoutContext';
+
 export const CheckoutShipping: React.FC = () => {
   const navigate = useNavigate();
 
-  const [currentStep] = useState<number>(1);
+  const {
+    shipping,
+    setShipping,
+    shippingMethod,
+    setShippingMethod,
+  } = useCheckout();
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [apartment, setApartment] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [zipCode, setZipCode] = useState('');
-
-  const [shippingMethod, setShippingMethod] = useState<
-    'standard' | 'express' | 'overnight'
-  >('standard');
-
-  const [saveInfo, setSaveInfo] = useState(false);
+  const currentStep = 1;
 
   const handleContinueToPayment = (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
+
+    const requiredFields = [
+      shipping.firstName,
+      shipping.lastName,
+      shipping.email,
+      shipping.address,
+      shipping.city,
+      shipping.state,
+      shipping.zipCode,
+    ];
+
+    const hasEmptyField = requiredFields.some(
+      (field) => !field.trim()
+    );
+
+    if (hasEmptyField) {
+      window.alert(
+        'Preencha todos os campos obrigatórios antes de continuar.'
+      );
+      return;
+    }
 
     navigate('/checkout-payment');
   };
@@ -73,7 +93,6 @@ export const CheckoutShipping: React.FC = () => {
       {/* Conteúdo */}
       <main className="flex-1 w-full pb-16 px-4">
         <div className="max-w-[1120px] mx-auto lg:grid lg:grid-cols-[1fr_420px] lg:gap-12 items-start">
-          
           {/* Shipping */}
           <form
             onSubmit={handleContinueToPayment}
@@ -95,18 +114,24 @@ export const CheckoutShipping: React.FC = () => {
                   label="First Name *"
                   placeholder="First name"
                   icon={<User className="w-4 h-4" />}
-                  value={firstName}
+                  value={shipping.firstName}
                   onChange={(e) =>
-                    setFirstName(e.target.value)
+                    setShipping({
+                      ...shipping,
+                      firstName: e.target.value,
+                    })
                   }
                 />
 
                 <Input
                   label="Last Name *"
                   placeholder="Last name"
-                  value={lastName}
+                  value={shipping.lastName}
                   onChange={(e) =>
-                    setLastName(e.target.value)
+                    setShipping({
+                      ...shipping,
+                      lastName: e.target.value,
+                    })
                   }
                 />
               </div>
@@ -117,9 +142,12 @@ export const CheckoutShipping: React.FC = () => {
                 type="email"
                 placeholder="Enter your email"
                 icon={<Mail className="w-4 h-4" />}
-                value={email}
+                value={shipping.email}
                 onChange={(e) =>
-                  setEmail(e.target.value)
+                  setShipping({
+                    ...shipping,
+                    email: e.target.value,
+                  })
                 }
               />
 
@@ -128,9 +156,12 @@ export const CheckoutShipping: React.FC = () => {
                 label="Phone Number"
                 placeholder="Phone number"
                 icon={<Phone className="w-4 h-4" />}
-                value={phone}
+                value={shipping.phone}
                 onChange={(e) =>
-                  setPhone(e.target.value)
+                  setShipping({
+                    ...shipping,
+                    phone: e.target.value,
+                  })
                 }
               />
 
@@ -139,9 +170,12 @@ export const CheckoutShipping: React.FC = () => {
                 label="Address *"
                 placeholder="Street address"
                 icon={<MapPin className="w-4 h-4" />}
-                value={address}
+                value={shipping.address}
                 onChange={(e) =>
-                  setAddress(e.target.value)
+                  setShipping({
+                    ...shipping,
+                    address: e.target.value,
+                  })
                 }
               />
 
@@ -150,9 +184,12 @@ export const CheckoutShipping: React.FC = () => {
                 label="Apartment, suite, etc. (optional)"
                 placeholder="Apartment, suite, unit, etc."
                 icon={<Building className="w-4 h-4" />}
-                value={apartment}
+                value={shipping.apartment}
                 onChange={(e) =>
-                  setApartment(e.target.value)
+                  setShipping({
+                    ...shipping,
+                    apartment: e.target.value,
+                  })
                 }
               />
 
@@ -161,9 +198,12 @@ export const CheckoutShipping: React.FC = () => {
                 <Input
                   label="City *"
                   placeholder="City"
-                  value={city}
+                  value={shipping.city}
                   onChange={(e) =>
-                    setCity(e.target.value)
+                    setShipping({
+                      ...shipping,
+                      city: e.target.value,
+                    })
                   }
                 />
 
@@ -174,9 +214,12 @@ export const CheckoutShipping: React.FC = () => {
 
                   <div className="relative">
                     <select
-                      value={state}
+                      value={shipping.state}
                       onChange={(e) =>
-                        setState(e.target.value)
+                        setShipping({
+                          ...shipping,
+                          state: e.target.value,
+                        })
                       }
                       className="w-full h-11 px-3 bg-white border border-gray-300 rounded-xl text-sm text-black focus:outline-none focus:ring-0 appearance-none"
                     >
@@ -204,9 +247,12 @@ export const CheckoutShipping: React.FC = () => {
                 <Input
                   label="ZIP Code *"
                   placeholder="ZIP code"
-                  value={zipCode}
+                  value={shipping.zipCode}
                   onChange={(e) =>
-                    setZipCode(e.target.value)
+                    setShipping({
+                      ...shipping,
+                      zipCode: e.target.value,
+                    })
                   }
                 />
               </div>
@@ -334,9 +380,12 @@ export const CheckoutShipping: React.FC = () => {
               {/* Salvar informações */}
               <div className="pt-2">
                 <Checkbox
-                  checked={saveInfo}
+                  checked={shipping.saveInfo}
                   onChange={() =>
-                    setSaveInfo((prev) => !prev)
+                    setShipping({
+                      ...shipping,
+                      saveInfo: !shipping.saveInfo,
+                    })
                   }
                   label="Save this information for next time"
                 />

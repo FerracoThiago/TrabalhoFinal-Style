@@ -30,7 +30,10 @@ export const CheckoutOrderSummary: React.FC<
   tax = 0,
   shippingMethod,
 }) => {
-  const shippingCosts = {
+  const shippingCosts: Record<
+    'standard' | 'express' | 'overnight',
+    number
+  > = {
     standard: 0,
     express: 9.99,
     overnight: 24.99,
@@ -38,7 +41,10 @@ export const CheckoutOrderSummary: React.FC<
 
   const shipping = shippingCosts[shippingMethod];
 
-  const total = subtotal - savings + shipping + tax;
+  const total = Math.max(
+    0,
+    subtotal - Math.abs(savings) + shipping + tax
+  );
 
   return (
     <div className="w-full bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
