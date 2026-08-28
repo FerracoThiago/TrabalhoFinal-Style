@@ -11,6 +11,7 @@ import { validateCreateProduct, validateUpdateProduct } from "../middlewares/pro
 import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
 import { AddressController } from "../controllers/AddressController";
 import { OrderController } from "../controllers/OrderController";
+import { WishlistController } from "../controllers/WishListController";
 
 const router = Router();
 
@@ -66,5 +67,12 @@ router.get("/order/:id", OrderController.readOrder);
 router.get("/order", OrderController.readAllOrders);
 router.put("/order/:id", OrderController.updateOrder);
 router.delete("/order/:id", OrderController.deleteOrder);
+
+/*Wishlist Controller*/
+router.post("/wishlist", authMiddleware, WishlistController.createWishlist);
+router.get("/wishlist", authMiddleware, WishlistController.readWishlist);
+router.put("/wishlist", authMiddleware, WishlistController.addItem);
+router.delete("/wishlist", authMiddleware, WishlistController.deleteItem);
+router.delete("/wishlist/:id", authMiddleware, WishlistController.deleteWishlist);
 
 export default router;
