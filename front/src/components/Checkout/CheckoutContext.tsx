@@ -1,6 +1,6 @@
-
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -77,9 +77,6 @@ interface CartData {
   items: CartItemData[];
 }
 
-/*
- * Este é o formato usado pelo CheckoutOrderSummary.
- */
 export interface CheckoutCartItem {
   id: number;
   name: string;
@@ -94,26 +91,16 @@ export interface CheckoutCartItem {
 interface CheckoutContextData {
   shippingData: ShippingData;
   paymentData: PaymentData;
-
   cartItems: CheckoutCartItem[];
-
   subtotalItems: number;
   subtotal: number;
   savings: number;
   tax: number;
   shippingCost: number;
   total: number;
-
-  setShippingData: (
-    data: ShippingData
-  ) => void;
-
-  setPaymentData: (
-    data: PaymentData
-  ) => void;
-
+  setShippingData: (data: ShippingData) => void;
+  setPaymentData: (data: PaymentData) => void;
   refreshCart: () => Promise<void>;
-
   clearCheckout: () => void;
 }
 
@@ -158,113 +145,94 @@ export const CheckoutProvider: React.FC<
   CheckoutProviderProps
 > = ({ children }) => {
   const [shippingData, setShippingData] =
-    useState<ShippingData>(
-      initialShippingData
-    );
+    useState<ShippingData>(initialShippingData);
 
   const [paymentData, setPaymentData] =
-    useState<PaymentData>(
-      initialPaymentData
-    );
+    useState<PaymentData>(initialPaymentData);
 
   const [cart, setCart] =
     useState<CartData | null>(null);
 
-  const token = localStorage.getItem('token');
+  const getProductImage = useCallback(
+    (product?: Product): string | undefined => {
+      if (!product) {
+        return undefined;
+      }
 
-  /*
-   * Converte a URL da imagem exatamente como
-   * o Cart.tsx faz.
-   */
-  const getProductImage = (
-    product?: Product
-  ): string | undefined => {
-    if (!product) {
-      return undefined;
-    }
+      const fileName =
+        product.images?.[0]?.fileName;
 
-    const fileName =
-      product.images?.[0]?.fileName;
+      if (!fileName) {
+        return undefined;
+      }
 
-    if (!fileName) {
-      return undefined;
-    }
+      if (
+        fileName.startsWith('http://') ||
+        fileName.startsWith('https://')
+      ) {
+        return fileName;
+      }
 
-    if (
-      fileName.startsWith('http://') ||
-      fileName.startsWith('https://')
-    ) {
-      return fileName;
-    }
+      const cleanFileName = fileName
+        .replace(/^\/+/, '')
+        .replace(/^uploads\/+/, 'uploads/');
 
-    const cleanFileName = fileName
-      .replace(/^\/+/, '')
-      .replace(/^uploads\/+/, 'uploads/');
+      return `http://localhost:3333/${cleanFileName}`;
+    },
+    []
+  );
 
-    return `http://localhost:3333/${cleanFileName}`;
-  };
+  const enrichCartWithProducts = useCallback(
+    async (
+      cartData: CartData
+    ): Promise<CartData> => {
+      const itemsWithProducts =
+        await Promise.all(
+          cartData.items.map(async (item) => {
+            if (item.product) {
+              return item;
+            }
 
-  /*
-   * A API do carrinho pode devolver apenas
-   * productId. Então buscamos os produtos para
-   * montar o mesmo formato usado pelo CartItem.
-   */
-  const enrichCartWithProducts = async (
-    cartData: CartData
-  ): Promise<CartData> => {
-    const itemsWithProducts =
-      await Promise.all(
-        cartData.items.map(async (item) => {
-          /*
-           * Se a API já trouxe o produto completo,
-           * não precisamos buscar novamente.
-           */
-          if (item.product) {
-            return item;
-          }
+            try {
+              const response = await fetch(
+                `http://localhost:3333/product/${item.productId}`
+              );
 
-          try {
-            const response = await fetch(
-              `http://localhost:3333/product/${item.productId}`
-            );
+              if (!response.ok) {
+                return item;
+              }
 
-            if (!response.ok) {
+              const productData: Product =
+                await response.json();
+
+              return {
+                ...item,
+                product: productData,
+              };
+            } catch (error) {
               console.error(
-                `Erro ao buscar produto ${item.productId}`
+                `Erro ao buscar produto ${item.productId}:`,
+                error
               );
 
               return item;
             }
+          })
+        );
 
-            const productData: Product =
-              await response.json();
+      return {
+        ...cartData,
+        items: itemsWithProducts,
+      };
+    },
+    []
+  );
 
-            return {
-              ...item,
-              product: productData,
-            };
-          } catch (error) {
-            console.error(
-              `Erro ao buscar produto ${item.productId}:`,
-              error
-            );
-
-            return item;
-          }
-        })
-      );
-
-    return {
-      ...cartData,
-      items: itemsWithProducts,
-    };
-  };
-
-  /*
-   * Busca o carrinho atual no backend.
-   */
-  const refreshCart = async () => {
+  const refreshCart = useCallback(async () => {
     try {
+      const token =
+        localStorage.getItem('token');
+
       if (!token) {
         setCart(null);
         return;
@@ -290,11 +258,6 @@ export const CheckoutProvider: React.FC<
       const data: CartData =
         await response.json();
 
-      /*
-       * IMPORTANTE:
-       * adiciona as informações do produto aos
-       * itens antes de salvar no Context.
-       */
       const enrichedCart =
         await enrichCartWithProducts(data);
 
@@ -305,28 +268,12 @@ export const CheckoutProvider: React.FC<
         error
       );
     }
-  };
+  }, [enrichCartWithProducts]);
 
-  /*
-   * Carrega o carrinho quando o Provider nasce.
-   */
   useEffect(() => {
     refreshCart();
-  }, []);
+  }, [refreshCart]);
 
-  /*
-   * Escuta as alterações feitas pelo Cart.tsx.
-   *
-   * Quando o usuário clicar +, -, remover etc.,
-   * o Cart dispara:
-   *
-   * window.dispatchEvent(
-   *   new Event('cart:updated')
-   * );
-   *
-   * O Context recebe esse evento e busca
-   * novamente o carrinho atualizado.
-   */
   useEffect(() => {
     const handleCartUpdated = () => {
       refreshCart();
@@ -343,67 +290,59 @@ export const CheckoutProvider: React.FC<
         handleCartUpdated
       );
     };
-  }, []);
+  }, [refreshCart]);
 
-  /*
-   * Transforma os itens da API no formato que
-   * o CheckoutOrderSummary entende.
-   */
-  const cartItems = useMemo<CheckoutCartItem[]>(
-    () => {
-      if (!cart) {
-        return [];
-      }
+  const cartItems = useMemo<
+    CheckoutCartItem[]
+  >(() => {
+    if (!cart) {
+      return [];
+    }
 
-      return cart.items.map((item) => {
-        const product = item.product;
+    return cart.items.map((item) => {
+      const product = item.product;
 
-        const variant =
-          product?.variants?.[0];
+      const variant =
+        product?.variants?.[0];
 
-        const price =
-          item.price ??
-          product?.price ??
-          0;
+      const price =
+        item.price ??
+        product?.price ??
+        0;
 
-        const oldPrice =
-          product &&
-          product.price > price
-            ? product.price
-            : undefined;
+      const oldPrice =
+        product &&
+        product.price > price
+          ? product.price
+          : undefined;
 
-        return {
-          id: item.id,
+      return {
+        id: item.id,
 
-          name:
-            product?.name ??
-            `Produto ${item.productId}`,
+        name:
+          product?.name ??
+          `Produto ${item.productId}`,
 
-          size:
-            variant?.size ??
-            'N/A',
+        size:
+          variant?.size ??
+          'N/A',
 
-          color:
-            variant?.color ??
-            'N/A',
+        color:
+          variant?.color ??
+          'N/A',
 
-          quantity: item.quantity,
+        quantity: item.quantity,
 
-          price,
+        price,
 
-          oldPrice,
+        oldPrice,
 
-          image:
-            getProductImage(product),
-        };
-      });
-    },
-    [cart]
-  );
+        image:
+          getProductImage(product),
+      };
+    });
+  }, [cart, getProductImage]);
 
-  /*
-   * Quantidade total de produtos.
-   */
   const subtotalItems = useMemo(() => {
     return cartItems.reduce(
       (total, item) =>
@@ -412,11 +351,6 @@ export const CheckoutProvider: React.FC<
     );
   }, [cartItems]);
 
-  /*
-   * MESMO cálculo usado no Cart.tsx:
-   *
-   * preço pago × quantidade
-   */
   const subtotal = useMemo(() => {
     return cartItems.reduce(
       (total, item) =>
@@ -426,9 +360,6 @@ export const CheckoutProvider: React.FC<
     );
   }, [cartItems]);
 
-  /*
-   * Economia dos produtos.
-   */
   const savings = useMemo(() => {
     return cartItems.reduce(
       (total, item) => {
@@ -449,42 +380,22 @@ export const CheckoutProvider: React.FC<
     );
   }, [cartItems]);
 
-  /*
-   * O Cart.tsx atualmente não adiciona imposto.
-   *
-   * Para o checkout ficar IDÊNTICO ao Cart,
-   * o tax precisa ser 0.
-   */
   const tax = 0;
 
-  /*
-   * Frete depende do método escolhido no checkout.
-   */
   const shippingCost = useMemo(() => {
     return shippingCosts[
       shippingData.shippingMethod
     ];
   }, [shippingData.shippingMethod]);
 
-  /*
-   * MESMA lógica do Cart:
-   *
-   * subtotal + frete
-   *
-   * NÃO subtrair savings novamente porque
-   * o item.price já representa o preço efetivamente pago.
-   */
   const total = useMemo(() => {
     return (
       subtotal +
       shippingCost
     );
-  }, [
-    subtotal,
-    shippingCost,
-  ]);
+  }, [subtotal, shippingCost]);
 
-  const clearCheckout = () => {
+  const clearCheckout = useCallback(() => {
     setShippingData({
       ...initialShippingData,
     });
@@ -494,25 +405,21 @@ export const CheckoutProvider: React.FC<
     });
 
     setCart(null);
-  };
+  }, []);
 
   const value = useMemo(
     () => ({
       shippingData,
       paymentData,
-
       cartItems,
-
       subtotalItems,
       subtotal,
       savings,
       tax,
       shippingCost,
       total,
-
       setShippingData,
       setPaymentData,
-
       refreshCart,
       clearCheckout,
     }),
@@ -526,6 +433,8 @@ export const CheckoutProvider: React.FC<
       tax,
       shippingCost,
       total,
+      refreshCart,
+      clearCheckout,
     ]
   );
 
