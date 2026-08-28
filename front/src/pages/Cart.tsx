@@ -26,6 +26,7 @@ interface Product {
   tags: string[];
   category: string;
   inStock: boolean;
+
   variants: {
     id: number;
     size: string;
@@ -33,6 +34,7 @@ interface Product {
     stock: number;
     productId: number;
   }[];
+
   images: ProductImage[];
 }
 
@@ -42,7 +44,7 @@ interface CartItemData {
   productId: number;
   quantity: number;
   price?: number;
-  product: Product;
+  product?: Product;
 }
 
 interface CartData {
@@ -69,12 +71,35 @@ export const Cart: React.FC = () => {
     2: jeansImage,
   };
 
+  /*
+   * Avisamos outras partes da aplicação que o carrinho mudou.
+   */
   const notifyCartUpdated = () => {
     window.dispatchEvent(new Event('cart:updated'));
   };
 
-  const getProductImage = (product: Product): string => {
-    const fileName = product?.images?.[0]?.fileName;
+  /*
+   * Salva uma cópia do carrinho atual para o Checkout.
+   *
+   * IMPORTANTE:
+   * O Checkout deve ler "checkout:cart" para montar
+   * o CheckoutOrderSummary.
+   */
+  const syncCartWithCheckout = (cartData: CartData) => {
+    localStorage.setItem(
+      'checkout:cart',
+      JSON.stringify(cartData)
+    );
+
+    notifyCartUpdated();
+  };
+
+  const getProductImage = (product?: Product): string => {
+    if (!product) {
+      return tshirtImage;
+    }
+
+    const fileName = product.images?.[0]?.fileName;
 
     if (!fileName) {
       return imageMap[product.id] || tshirtImage;
@@ -94,6 +119,10 @@ export const Cart: React.FC = () => {
     return `http://localhost:3333/${cleanFileName}`;
   };
 
+  /*
+   * O endpoint /cart retorna os itens, mas precisamos buscar
+   * os produtos para obter nome, imagem, variante, estoque etc.
+   */
   const enrichCartWithProducts = async (
     cartData: CartData
   ): Promise<CartData> => {
@@ -112,7 +141,8 @@ export const Cart: React.FC = () => {
             return item;
           }
 
-          const productData: Product = await response.json();
+          const productData: Product =
+            await response.json();
 
           return {
             ...item,
@@ -135,6 +165,9 @@ export const Cart: React.FC = () => {
     };
   };
 
+  /*
+   * Carrega o carrinho do backend.
+   */
   const loadCart = async () => {
     try {
       if (!token) {
@@ -153,7 +186,8 @@ export const Cart: React.FC = () => {
         }
       );
 
-      const data: CartData = await response.json();
+      const data: CartData =
+        await response.json();
 
       if (!response.ok) {
         console.error(data);
@@ -165,7 +199,11 @@ export const Cart: React.FC = () => {
 
       setCart(updatedCart);
 
-      notifyCartUpdated();
+      /*
+       * Aqui está uma das partes mais importantes:
+       * o Checkout recebe exatamente o mesmo carrinho.
+       */
+      syncCartWithCheckout(updatedCart);
     } catch (error) {
       console.error(
         'Erro ao carregar carrinho:',
@@ -180,6 +218,9 @@ export const Cart: React.FC = () => {
     loadCart();
   }, []);
 
+  /*
+   * Atualiza quantidade (+ / -).
+   */
   const updateQuantity = async (
     productId: number,
     operation: 'add' | 'remove'
@@ -206,7 +247,8 @@ export const Cart: React.FC = () => {
         }
       );
 
-      const data: CartData = await response.json();
+      const data: CartData =
+        await response.json();
 
       if (!response.ok) {
         console.error(data);
@@ -218,7 +260,11 @@ export const Cart: React.FC = () => {
 
       setCart(updatedCart);
 
-      notifyCartUpdated();
+      /*
+       * Toda vez que clicar em + ou -,
+       * o Checkout recebe o novo valor.
+       */
+      syncCartWithCheckout(updatedCart);
     } catch (error) {
       console.error(
         'Erro ao atualizar carrinho:',
@@ -227,6 +273,9 @@ export const Cart: React.FC = () => {
     }
   };
 
+  /*
+   * Remove completamente um produto.
+   */
   const removeItem = async (
     productId: number,
     currentQuantity: number
@@ -253,7 +302,8 @@ export const Cart: React.FC = () => {
         }
       );
 
-      const data: CartData = await response.json();
+      const data: CartData =
+        await response.json();
 
       if (!response.ok) {
         console.error(data);
@@ -265,7 +315,10 @@ export const Cart: React.FC = () => {
 
       setCart(updatedCart);
 
-      notifyCartUpdated();
+      /*
+       * Também sincroniza quando um produto é removido.
+       */
+      syncCartWithCheckout(updatedCart);
     } catch (error) {
       console.error(
         'Erro ao remover produto:',
@@ -274,57 +327,100 @@ export const Cart: React.FC = () => {
     }
   };
 
+  /*
+   * Quantidade total de unidades.
+   */
   const totalItems =
     cart?.items.reduce(
-      (total, item) => total + item.quantity,
+      (total, item) =>
+        total + item.quantity,
       0
     ) ?? 0;
 
+  /*
+   * Subtotal usando o preço efetivamente pago.
+   */
   const calculatedSubtotal =
-    cart?.items.reduce((total, item) => {
-      const price =
-        item.price ??
-        item.product?.price ??
-        0;
+    cart?.items.reduce(
+      (total, item) => {
+        const price =
+          item.price ??
+          item.product?.price ??
+          0;
 
-      return total + price * item.quantity;
-    }, 0) ?? 0;
+        return (
+          total +
+          price * item.quantity
+        );
+      },
+      0
+    ) ?? 0;
 
+  /*
+   * Economia dos descontos.
+   */
   const calculatedSavings =
-    cart?.items.reduce((total, item) => {
-      const productPrice =
-        item.product?.price ?? 0;
+    cart?.items.reduce(
+      (total, item) => {
+        const productPrice =
+          item.product?.price ?? 0;
 
-      const itemPrice =
-        item.price ?? productPrice;
+        const itemPrice =
+          item.price ??
+          productPrice;
 
-      const discount =
-        productPrice - itemPrice;
+        const discount =
+          productPrice - itemPrice;
 
-      return total + Math.max(discount, 0) * item.quantity;
-    }, 0) ?? 0;
+        return (
+          total +
+          Math.max(discount, 0) *
+            item.quantity
+        );
+      },
+      0
+    ) ?? 0;
 
+  /*
+   * Frete atual do carrinho.
+   */
   const calculatedShipping =
     cart?.shipping ?? 0;
 
+  /*
+   * Total do carrinho.
+   *
+   * O subtotal já usa o preço efetivamente pago,
+   * portanto não descontamos savings novamente.
+   */
   const calculatedTotal =
     calculatedSubtotal +
     calculatedShipping;
 
+  /*
+   * Produtos disponíveis.
+   */
   const availableItems =
     cart?.items.filter(
-      (item) => item.product?.inStock
+      (item) =>
+        item.product?.inStock
     ) ?? [];
 
+  /*
+   * Produtos sem estoque.
+   */
   const outOfStockItems =
     cart?.items.filter(
-      (item) => !item.product?.inStock
+      (item) =>
+        !item.product?.inStock
     ) ?? [];
 
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <span>Carregando carrinho...</span>
+        <span>
+          Carregando carrinho...
+        </span>
       </div>
     );
   }
@@ -332,7 +428,9 @@ export const Cart: React.FC = () => {
   if (!cart) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <span>Carrinho não encontrado.</span>
+        <span>
+          Carrinho não encontrado.
+        </span>
       </div>
     );
   }
@@ -341,11 +439,14 @@ export const Cart: React.FC = () => {
     <div className="min-h-screen bg-white flex flex-col">
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
 
+        {/* Header */}
         <div className="flex items-center justify-between w-full mx-auto px-1">
           <div className="flex items-center space-x-3">
             <button
               type="button"
-              onClick={() => navigate('/home')}
+              onClick={() =>
+                navigate('/home')
+              }
               aria-label="Go back"
               className="text-black hover:opacity-70 transition-opacity flex items-center justify-center"
             >
@@ -367,14 +468,19 @@ export const Cart: React.FC = () => {
 
           <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0">
             {totalItems}{' '}
-            {totalItems === 1 ? 'item' : 'items'}
+            {totalItems === 1
+              ? 'item'
+              : 'items'}
           </span>
         </div>
 
+        {/* Conteúdo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start w-full">
 
+          {/* Produtos */}
           <div className="flex flex-col gap-6 md:col-span-2 w-full">
 
+            {/* Available Items */}
             {availableItems.length > 0 && (
               <div
                 className="bg-white border border-gray-100 shadow-sm flex flex-col w-full max-w-[358px] md:max-w-none mx-auto md:mx-0"
@@ -402,83 +508,111 @@ export const Cart: React.FC = () => {
                       letterSpacing: '-0.6px',
                     }}
                   >
-                    Available Items ({availableItems.length})
+                    Available Items (
+                    {availableItems.length}
+                    )
                   </span>
                 </div>
 
                 <div
                   className="flex flex-col w-full"
-                  style={{ gap: '24px' }}
+                  style={{
+                    gap: '24px',
+                  }}
                 >
-                  {availableItems.map((item, index) => {
-                    const product = item.product;
-                    const variant =
-                      product?.variants?.[0];
+                  {availableItems.map(
+                    (item, index) => {
+                      const product =
+                        item.product;
 
-                    const image =
-                      getProductImage(product);
+                      if (!product) {
+                        return null;
+                      }
 
-                    const maxQuantity =
-                      variant?.stock ?? 99;
+                      const variant =
+                        product.variants?.[0];
 
-                    const price =
-                      item.price ??
-                      product?.price ??
-                      0;
+                      const image =
+                        getProductImage(
+                          product
+                        );
 
-                    return (
-                      <CartItem
-                        key={item.id}
-                        image={image}
-                        name={product.name}
-                        style={`STYLE ${
-                          product.category ||
-                          'Collection'
-                        }`}
-                        size={
-                          variant?.size || 'N/A'
-                        }
-                        color={
-                          variant?.color || 'N/A'
-                        }
-                        price={`$${price.toFixed(2)}`}
-                        oldPrice=""
-                        savings=""
-                        quantity={item.quantity}
-                        maxQuantity={maxQuantity}
-                        onDecrease={() => {
-                          if (item.quantity > 1) {
+                      const maxQuantity =
+                        variant?.stock ?? 99;
+
+                      const price =
+                        item.price ??
+                        product.price ??
+                        0;
+
+                      return (
+                        <CartItem
+                          key={item.id}
+                          image={image}
+                          name={product.name}
+                          style={`STYLE ${
+                            product.category ||
+                            'Collection'
+                          }`}
+                          size={
+                            variant?.size ||
+                            'N/A'
+                          }
+                          color={
+                            variant?.color ||
+                            'N/A'
+                          }
+                          price={`$${price.toFixed(
+                            2
+                          )}`}
+                          oldPrice=""
+                          savings=""
+                          quantity={
+                            item.quantity
+                          }
+                          maxQuantity={
+                            maxQuantity
+                          }
+                          onDecrease={() => {
+                            if (
+                              item.quantity >
+                              1
+                            ) {
+                              updateQuantity(
+                                item.productId,
+                                'remove'
+                              );
+                            }
+                          }}
+                          onIncrease={() =>
                             updateQuantity(
                               item.productId,
-                              'remove'
-                            );
+                              'add'
+                            )
                           }
-                        }}
-                        onIncrease={() =>
-                          updateQuantity(
-                            item.productId,
-                            'add'
-                          )
-                        }
-                        onRemove={() =>
-                          removeItem(
-                            item.productId,
-                            item.quantity
-                          )
-                        }
-                        showDivider={
-                          index <
-                          availableItems.length - 1
-                        }
-                      />
-                    );
-                  })}
+                          onRemove={() =>
+                            removeItem(
+                              item.productId,
+                              item.quantity
+                            )
+                          }
+                          showDivider={
+                            index <
+                            availableItems.length -
+                              1
+                          }
+                        />
+                      );
+                    }
+                  )}
                 </div>
               </div>
             )}
 
+            {/* Out of Stock */}
             {outOfStockItems.length > 0 && (
               <div className="w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
+
                 <div className="flex items-center space-x-2 mb-4">
                   <span className="w-3 h-3 rounded-full bg-gray-400" />
 
@@ -491,74 +625,96 @@ export const Cart: React.FC = () => {
                       lineHeight: '24px',
                     }}
                   >
-                    Out of Stock ({outOfStockItems.length})
+                    Out of Stock (
+                    {outOfStockItems.length}
+                    )
                   </span>
                 </div>
 
                 <div className="flex flex-col gap-6">
-                  {outOfStockItems.map((item) => {
-                    const product = item.product;
-                    const variant =
-                      product?.variants?.[0];
+                  {outOfStockItems.map(
+                    (item) => {
+                      const product =
+                        item.product;
 
-                    const image =
-                      getProductImage(product);
+                      if (!product) {
+                        return null;
+                      }
 
-                    const price =
-                      item.price ??
-                      product?.price ??
-                      0;
+                      const variant =
+                        product.variants?.[0];
 
-                    return (
-                      <CartItem
-                        key={item.id}
-                        image={image}
-                        name={product.name}
-                        style={`STYLE ${
-                          product.category ||
-                          'Collection'
-                        }`}
-                        size={
-                          variant?.size || 'N/A'
-                        }
-                        color={
-                          variant?.color || 'N/A'
-                        }
-                        price={`$${price.toFixed(2)}`}
-                        oldPrice=""
-                        savings=""
-                        quantity={item.quantity}
-                        maxQuantity={
-                          variant?.stock ?? 99
-                        }
-                        onDecrease={() => {
-                          if (item.quantity > 1) {
+                      const image =
+                        getProductImage(
+                          product
+                        );
+
+                      const price =
+                        item.price ??
+                        product.price ??
+                        0;
+
+                      return (
+                        <CartItem
+                          key={item.id}
+                          image={image}
+                          name={product.name}
+                          style={`STYLE ${
+                            product.category ||
+                            'Collection'
+                          }`}
+                          size={
+                            variant?.size ||
+                            'N/A'
+                          }
+                          color={
+                            variant?.color ||
+                            'N/A'
+                          }
+                          price={`$${price.toFixed(
+                            2
+                          )}`}
+                          oldPrice=""
+                          savings=""
+                          quantity={
+                            item.quantity
+                          }
+                          maxQuantity={
+                            variant?.stock ?? 99
+                          }
+                          onDecrease={() => {
+                            if (
+                              item.quantity >
+                              1
+                            ) {
+                              updateQuantity(
+                                item.productId,
+                                'remove'
+                              );
+                            }
+                          }}
+                          onIncrease={() =>
                             updateQuantity(
                               item.productId,
-                              'remove'
-                            );
+                              'add'
+                            )
                           }
-                        }}
-                        onIncrease={() =>
-                          updateQuantity(
-                            item.productId,
-                            'add'
-                          )
-                        }
-                        onRemove={() =>
-                          removeItem(
-                            item.productId,
-                            item.quantity
-                          )
-                        }
-                        showDivider={false}
-                      />
-                    );
-                  })}
+                          onRemove={() =>
+                            removeItem(
+                              item.productId,
+                              item.quantity
+                            )
+                          }
+                          showDivider={false}
+                        />
+                      );
+                    }
+                  )}
                 </div>
               </div>
             )}
 
+            {/* Carrinho vazio */}
             {cart.items.length === 0 && (
               <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-8 text-center">
                 <p className="text-gray-500">
@@ -568,6 +724,7 @@ export const Cart: React.FC = () => {
             )}
           </div>
 
+          {/* Resumo */}
           <div className="flex flex-col gap-6 w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
 
             <PromoCode />
@@ -578,7 +735,11 @@ export const Cart: React.FC = () => {
               savings={calculatedSavings}
               shipping={calculatedShipping}
               total={calculatedTotal}
-              onCheckout={() => navigate('/checkout')}
+              onCheckout={() =>
+                navigate(
+                  '/checkout-shipping'
+                )
+              }
               onContinueShopping={() =>
                 navigate('/home')
               }
