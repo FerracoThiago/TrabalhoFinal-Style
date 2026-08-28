@@ -13,6 +13,9 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 import { validateCreateProduct, validateUpdateProduct } from "../middlewares/productMiddleware";
 import { validateCreateReview, validateUpdateReview } from "../middlewares/reviewMiddleware";
 import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
+import { AddressController } from "../controllers/AddressController";
+import { OrderController } from "../controllers/OrderController";
+import { WishlistController } from "../controllers/WishListController";
 
 const router = Router();
 
@@ -69,6 +72,12 @@ router.get("/order", OrderController.readAllOrders);
 router.put("/order/:id", OrderController.updateOrder);
 router.delete("/order/:id", OrderController.deleteOrder);
 
+/*Wishlist Controller*/
+router.post("/wishlist", authMiddleware, WishlistController.createWishlist);
+router.get("/wishlist", authMiddleware, WishlistController.readWishlist);
+router.put("/wishlist", authMiddleware, WishlistController.addItem);
+router.delete("/wishlist", authMiddleware, WishlistController.deleteItem);
+router.delete("/wishlist/:id", authMiddleware, WishlistController.deleteWishlist);
 /*Review Controller */
 router.post("/review",authMiddleware,validateCreateReview,ReviewController.createReview);
 router.get("/review/:reviewId", ReviewController.readReview);
