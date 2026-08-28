@@ -21,10 +21,54 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const getUserFromToken = (token: string) => {
+    try {
+      const parts = token.split('.');
+
+      if (parts.length !== 3) {
+        return null;
+      }
+
+      const base64 = parts[1]
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+      const paddedBase64 =
+        base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+
+      const payload = JSON.parse(atob(paddedBase64));
+
+      return {
+        firstName:
+          payload.firstName ||
+          payload.firstname ||
+          payload.first_name ||
+          payload.nome ||
+          '',
+
+        lastName:
+          payload.lastName ||
+          payload.lastname ||
+          payload.last_name ||
+          payload.sobrenome ||
+          '',
+
+        name:
+          payload.name ||
+          payload.fullName ||
+          payload.full_name ||
+          '',
+      };
+    } catch {
+      return null;
+    }
+  };
+
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
+
     setError('');
 
     try {
@@ -32,9 +76,11 @@ export const Login: React.FC = () => {
         'http://localhost:3333/auth/login',
         {
           method: 'POST',
+
           headers: {
             'Content-Type': 'application/json',
           },
+
           body: JSON.stringify({
             email,
             password,
@@ -45,7 +91,66 @@ export const Login: React.FC = () => {
       if (response.status === 200) {
         const data = await response.json();
 
-        localStorage.setItem('token', data.token);
+        const token = data.token;
+
+        if (!token) {
+          setError(
+            'Token de autenticação não encontrado.'
+          );
+
+          return;
+        }
+
+        localStorage.setItem('token', token);
+
+        const tokenUser = getUserFromToken(token);
+
+        const firstName =
+          data.user?.firstName ||
+          data.user?.firstname ||
+          data.user?.first_name ||
+          data.firstName ||
+          data.firstname ||
+          data.first_name ||
+          tokenUser?.firstName ||
+          '';
+
+        const lastName =
+          data.user?.lastName ||
+          data.user?.lastname ||
+          data.user?.last_name ||
+          data.lastName ||
+          data.lastname ||
+          data.last_name ||
+          tokenUser?.lastName ||
+          '';
+
+        const fullName =
+          data.user?.name ||
+          data.user?.fullName ||
+          data.user?.full_name ||
+          data.name ||
+          data.fullName ||
+          data.full_name ||
+          tokenUser?.name ||
+          [firstName, lastName]
+            .filter(Boolean)
+            .join(' ');
+
+        if (firstName || lastName || fullName) {
+          localStorage.setItem(
+            'user',
+            JSON.stringify({
+              firstName,
+              lastName,
+              name: fullName,
+            })
+          );
+        }
+
+        window.dispatchEvent(
+          new Event('auth:updated')
+        );
 
         navigate('/home');
 
@@ -54,12 +159,17 @@ export const Login: React.FC = () => {
 
       if (response.status === 401) {
         setError('Email ou senha inválidos.');
+
         return;
       }
 
-      setError('Não foi possível realizar o login.');
+      setError(
+        'Não foi possível realizar o login.'
+      );
     } catch {
-      setError('Erro ao conectar com o servidor.');
+      setError(
+        'Erro ao conectar com o servidor.'
+      );
     }
   };
 
@@ -95,7 +205,9 @@ export const Login: React.FC = () => {
               className="w-5 h-5"
             />
 
-            <span>Continue with Google</span>
+            <span>
+              Continue with Google
+            </span>
           </button>
 
           <button
@@ -108,7 +220,9 @@ export const Login: React.FC = () => {
               className="w-5 h-5"
             />
 
-            <span>Continue with Facebook</span>
+            <span>
+              Continue with Facebook
+            </span>
           </button>
         </div>
 
@@ -132,7 +246,9 @@ export const Login: React.FC = () => {
             placeholder="Enter your email"
             icon={<Mail className="w-4 h-4" />}
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
           />
 
           <Input
@@ -141,7 +257,9 @@ export const Login: React.FC = () => {
             placeholder="Enter your password"
             icon={<Lock className="w-4 h-4" />}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
           />
 
           {error && (
