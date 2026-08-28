@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Button } from './Button';
 
 interface OrderSummaryProps {
@@ -22,8 +23,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 }) => {
   const safeSubtotalItems = Number(subtotalItems) || 0;
   const safeSubtotal = Number(subtotal) || 0;
-  const safeSavings = Number(savings) || 0;
-  const safeShipping = Number(shipping) || 0;
+  const safeSavings = Math.max(Number(savings) || 0, 0);
+  const safeShipping = Math.max(Number(shipping) || 0, 0);
   const safeTotal = Number(total) || 0;
 
   return (
