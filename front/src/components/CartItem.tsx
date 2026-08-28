@@ -45,15 +45,29 @@ export const CartItem: React.FC<CartItemProps> = ({
     letterSpacing: '0%',
   };
 
+  const handleImageError = (
+    event: React.SyntheticEvent<HTMLImageElement>
+  ) => {
+    const img = event.currentTarget;
+
+    // Evita loop caso a imagem de fallback também dê erro.
+    img.onerror = null;
+
+    // Mantém o container funcionando mesmo quando a API
+    // retornar uma imagem inexistente.
+    img.style.display = 'none';
+  };
+
   return (
     <div className="flex flex-col w-full min-w-0">
       {/* MOBILE */}
       <div className="md:hidden flex flex-col w-full min-w-0">
-        <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+        <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover block"
+            onError={handleImageError}
           />
         </div>
 
@@ -186,9 +200,7 @@ export const CartItem: React.FC<CartItemProps> = ({
             type="button"
             onClick={onSaveForLater}
             className="flex items-center gap-1.5 shrink-0 whitespace-nowrap"
-            style={{
-              height: '24px',
-            }}
+            style={{ height: '24px' }}
           >
             <span
               className="flex-none flex items-center justify-center"
@@ -204,15 +216,6 @@ export const CartItem: React.FC<CartItemProps> = ({
                 size={16}
                 strokeWidth={2}
                 color="#000000"
-                style={{
-                  width: '16px',
-                  height: '16px',
-                  minWidth: '16px',
-                  minHeight: '16px',
-                  display: 'block',
-                  flexShrink: 0,
-                  overflow: 'visible',
-                }}
               />
             </span>
 
@@ -225,9 +228,7 @@ export const CartItem: React.FC<CartItemProps> = ({
             type="button"
             onClick={onRemove}
             className="flex items-center gap-1.5 shrink-0 whitespace-nowrap"
-            style={{
-              height: '24px',
-            }}
+            style={{ height: '24px' }}
           >
             <span
               className="flex-none flex items-center justify-center"
@@ -243,15 +244,6 @@ export const CartItem: React.FC<CartItemProps> = ({
                 size={16}
                 strokeWidth={2}
                 color="#000000"
-                style={{
-                  width: '16px',
-                  height: '16px',
-                  minWidth: '16px',
-                  minHeight: '16px',
-                  display: 'block',
-                  flexShrink: 0,
-                  overflow: 'visible',
-                }}
               />
             </span>
 
@@ -264,11 +256,12 @@ export const CartItem: React.FC<CartItemProps> = ({
 
       {/* DESKTOP */}
       <div className="hidden md:flex gap-4 w-full min-w-0">
-        <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+        <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover block"
+            onError={handleImageError}
           />
         </div>
 
@@ -430,15 +423,6 @@ export const CartItem: React.FC<CartItemProps> = ({
                     size={16}
                     strokeWidth={2}
                     color="#000000"
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      minWidth: '16px',
-                      minHeight: '16px',
-                      display: 'block',
-                      flexShrink: 0,
-                      overflow: 'visible',
-                    }}
                   />
                 </span>
 
@@ -474,15 +458,6 @@ export const CartItem: React.FC<CartItemProps> = ({
                     size={16}
                     strokeWidth={2}
                     color="#000000"
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      minWidth: '16px',
-                      minHeight: '16px',
-                      display: 'block',
-                      flexShrink: 0,
-                      overflow: 'visible',
-                    }}
                   />
                 </span>
 
