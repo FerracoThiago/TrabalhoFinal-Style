@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
+
 import { User, Mail, Lock } from 'lucide-react';
+
 import { useNavigate, Link } from 'react-router-dom';
 
 import { Logo } from '../components/Logo';
+
 import { Input } from '../components/Input';
+
 import { Checkbox } from '../components/Checkbox';
+
 import { SubmitButton } from '../components/SubmitButton';
 
 import googleIcon from '../assets/icons/google.svg';
+
 import facebookIcon from '../assets/icons/facebook.svg';
 
 export const Cadastro: React.FC = () => {
@@ -18,18 +24,28 @@ export const Cadastro: React.FC = () => {
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     setError('');
 
+    if (!firstName.trim() || !lastName.trim()) {
+      setError('Preencha seu nome e sobrenome.');
+      return;
+    }
+
     if (!termsAccepted) {
-      setError('Você precisa aceitar os Termos de Serviço e a Política de Privacidade.');
+      setError(
+        'Você precisa aceitar os Termos de Serviço e a Política de Privacidade.'
+      );
       return;
     }
 
@@ -39,19 +55,22 @@ export const Cadastro: React.FC = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3333/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-          notifications: newsletterAccepted ? true : false,
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:3333/auth/register',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            email: email.trim(),
+            password,
+            notifications: newsletterAccepted,
+          }),
+        }
+      );
 
       if (response.status === 201) {
         navigate('/login');
@@ -95,7 +114,12 @@ export const Cadastro: React.FC = () => {
             type="button"
             className="w-full h-12 border border-gray-300 rounded-xl flex items-center justify-center space-x-3 bg-white hover:bg-gray-50 transition-colors text-sm font-medium text-black"
           >
-            <img src={googleIcon} alt="Google" className="w-5 h-5" />
+            <img
+              src={googleIcon}
+              alt="Google"
+              className="w-5 h-5"
+            />
+
             <span>Continue with Google</span>
           </button>
 
@@ -103,7 +127,12 @@ export const Cadastro: React.FC = () => {
             type="button"
             className="w-full h-12 border border-gray-300 rounded-xl flex items-center justify-center space-x-3 bg-white hover:bg-gray-50 transition-colors text-sm font-medium text-black"
           >
-            <img src={facebookIcon} alt="Facebook" className="w-5 h-5" />
+            <img
+              src={facebookIcon}
+              alt="Facebook"
+              className="w-5 h-5"
+            />
+
             <span>Continue with Facebook</span>
           </button>
         </div>
@@ -172,13 +201,17 @@ export const Cadastro: React.FC = () => {
           <div className="space-y-3 pt-2">
             <Checkbox
               checked={termsAccepted}
-              onChange={() => setTermsAccepted((prev) => !prev)}
+              onChange={() =>
+                setTermsAccepted((prev) => !prev)
+              }
               label="I agree to the Terms of Service and Privacy Policy"
             />
 
             <Checkbox
               checked={newsletterAccepted}
-              onChange={() => setNewsletterAccepted((prev) => !prev)}
+              onChange={() =>
+                setNewsletterAccepted((prev) => !prev)
+              }
               label="Subscribe to our newsletter for exclusive offers and updates"
             />
           </div>
