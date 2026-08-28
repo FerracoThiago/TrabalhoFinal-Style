@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Menu, Search, Heart, ShoppingBag } from 'lucide-react';
 
@@ -13,7 +13,7 @@ const Header: React.FC = () => {
 
   const [cartCount, setCartCount] = useState(0);
 
-  const loadCartCount = async () => {
+  const loadCartCount = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
 
@@ -45,15 +45,16 @@ const Header: React.FC = () => {
 
       setCartCount(totalItems);
     } catch (error) {
-      console.error('Erro ao carregar quantidade do carrinho:', error);
+      console.error(
+        'Erro ao carregar quantidade do carrinho:',
+        error
+      );
     }
-  };
+  }, []);
 
   useEffect(() => {
-    // Carrega a quantidade quando o Header monta
     loadCartCount();
 
-    // Atualiza quando o Cart alterar o carrinho
     const handleCartUpdated = () => {
       loadCartCount();
     };
@@ -63,23 +64,24 @@ const Header: React.FC = () => {
     return () => {
       window.removeEventListener('cart:updated', handleCartUpdated);
     };
-  }, []);
+  }, [loadCartCount]);
+
+  const handleCartClick = () => {
+    navigate('/cart');
+  };
 
   return (
     <header className="w-full">
-
-      {/* --- MOBILE COMPONENT --- */}
+      {/* MOBILE */}
       <div className="block md:hidden w-full">
-
         <div className="w-full bg-black text-white py-1.5 px-4 text-center text-sm">
           Free shipping on orders over $100 | New arrivals daily
         </div>
 
         <div className="w-full bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-between">
-
           <div className="flex items-center gap-5 text-gray-700">
-
             <button
+              type="button"
               aria-label="Menu"
               className="text-gray-700"
             >
@@ -92,11 +94,9 @@ const Header: React.FC = () => {
                 className="h-full w-full object-contain"
               />
             </div>
-
           </div>
 
           <div className="flex items-center gap-8 space-x-3 text-gray-700">
-
             <Search className="w-5 h-5" />
 
             <Heart className="w-5 h-5" />
@@ -105,8 +105,12 @@ const Header: React.FC = () => {
               JD
             </div>
 
-            <div className="relative">
-
+            <button
+              type="button"
+              aria-label="Abrir carrinho"
+              onClick={handleCartClick}
+              className="relative cursor-pointer"
+            >
               <ShoppingBag className="w-5 h-5" />
 
               {cartCount > 0 && (
@@ -114,27 +118,21 @@ const Header: React.FC = () => {
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
-
-            </div>
-
+            </button>
           </div>
-
         </div>
-
       </div>
 
-      {/* --- DESKTOP COMPONENT --- */}
+      {/* DESKTOP */}
       <div className="hidden md:block w-full bg-white border-b border-gray-200">
-
         <div className="w-full bg-black text-white py-1.5 px-4 text-center text-sm">
           Free shipping on orders over $100 | New arrivals daily
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
-
           <div
             className="cursor-pointer shrink-0"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/home')}
             style={{
               width: '76px',
               height: '32px',
@@ -148,45 +146,44 @@ const Header: React.FC = () => {
           </div>
 
           <nav className="flex items-center space-x-8 text-sm font-medium text-black shrink-0">
-
-            <button onClick={() => navigate('/new-in')}>
+            <button type="button" onClick={() => navigate('/new-in')}>
               New In
             </button>
 
-            <button onClick={() => navigate('/women')}>
+            <button type="button" onClick={() => navigate('/women')}>
               Women
             </button>
 
-            <button onClick={() => navigate('/men')}>
+            <button type="button" onClick={() => navigate('/men')}>
               Men
             </button>
 
-            <button onClick={() => navigate('/sale')}>
+            <button type="button" onClick={() => navigate('/sale')}>
               Sale
             </button>
-
           </nav>
 
           <div className="flex-1 max-w-md mx-4">
-
             <SearchBar
               placeholder="Search for products..."
               value=""
               onChange={() => {}}
             />
-
           </div>
 
           <div className="flex items-center space-x-6 shrink-0">
-
             <Heart className="w-5 h-5 cursor-pointer" />
 
             <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-xs font-semibold">
               JD
             </div>
 
-            <div className="relative cursor-pointer">
-
+            <button
+              type="button"
+              aria-label="Abrir carrinho"
+              onClick={handleCartClick}
+              className="relative cursor-pointer"
+            >
               <ShoppingBag className="w-5 h-5" />
 
               {cartCount > 0 && (
@@ -194,15 +191,10 @@ const Header: React.FC = () => {
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
-
-            </div>
-
+            </button>
           </div>
-
         </div>
-
       </div>
-
     </header>
   );
 };

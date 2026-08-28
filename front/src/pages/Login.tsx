@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+
 import { Mail, Lock } from 'lucide-react';
+
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Logo } from '../components/Logo';
+
 import { Input } from '../components/Input';
+
 import { SubmitButton } from '../components/SubmitButton';
 
 import googleIcon from '../assets/icons/google.svg';
+
 import facebookIcon from '../assets/icons/facebook.svg';
 
 export const Login: React.FC = () => {
@@ -16,28 +21,34 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3333/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      const response = await fetch(
+        'http://localhost:3333/auth/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
 
       if (response.status === 200) {
         const data = await response.json();
 
         localStorage.setItem('token', data.token);
 
-        navigate('/');
+        navigate('/home');
+
         return;
       }
 
@@ -78,7 +89,12 @@ export const Login: React.FC = () => {
             type="button"
             className="w-full h-12 border border-gray-300 rounded-xl flex items-center justify-center space-x-3 bg-white hover:bg-gray-50 transition-colors text-sm font-medium text-black"
           >
-            <img src={googleIcon} alt="Google" className="w-5 h-5" />
+            <img
+              src={googleIcon}
+              alt="Google"
+              className="w-5 h-5"
+            />
+
             <span>Continue with Google</span>
           </button>
 
@@ -86,7 +102,12 @@ export const Login: React.FC = () => {
             type="button"
             className="w-full h-12 border border-gray-300 rounded-xl flex items-center justify-center space-x-3 bg-white hover:bg-gray-50 transition-colors text-sm font-medium text-black"
           >
-            <img src={facebookIcon} alt="Facebook" className="w-5 h-5" />
+            <img
+              src={facebookIcon}
+              alt="Facebook"
+              className="w-5 h-5"
+            />
+
             <span>Continue with Facebook</span>
           </button>
         </div>
@@ -101,7 +122,10 @@ export const Login: React.FC = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
           <Input
             label="Email address"
             type="email"

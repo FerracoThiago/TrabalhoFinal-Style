@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
-
 import { ArrowLeft } from 'lucide-react';
 
 import { CartItem } from '../components/CartItem';
-
 import { PromoCode } from '../components/PromoCode';
-
 import { OrderSummary } from '../components/OrderSummary';
 
 import tshirtImage from '../assets/images/cart-tshirt.png';
-
 import jeansImage from '../assets/images/cart-jeans.png';
 
 interface ProductImage {
@@ -31,7 +26,6 @@ interface Product {
   tags: string[];
   category: string;
   inStock: boolean;
-
   variants: {
     id: number;
     size: string;
@@ -39,7 +33,6 @@ interface Product {
     stock: number;
     productId: number;
   }[];
-
   images: ProductImage[];
 }
 
@@ -67,7 +60,6 @@ export const Cart: React.FC = () => {
   const navigate = useNavigate();
 
   const [cart, setCart] = useState<CartData | null>(null);
-
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem('token');
@@ -81,17 +73,6 @@ export const Cart: React.FC = () => {
     window.dispatchEvent(new Event('cart:updated'));
   };
 
-  /*
-   * Monta a URL da imagem que vem do backend.
-   *
-   * Exemplo recebido pelo backend:
-   *
-   * uploads/photos/default-photo.png
-   *
-   * Resultado:
-   *
-   * http://localhost:3333/uploads/photos/default-photo.png
-   */
   const getProductImage = (product: Product): string => {
     const fileName = product?.images?.[0]?.fileName;
 
@@ -99,7 +80,10 @@ export const Cart: React.FC = () => {
       return imageMap[product.id] || tshirtImage;
     }
 
-    if (fileName.startsWith('http://') || fileName.startsWith('https://')) {
+    if (
+      fileName.startsWith('http://') ||
+      fileName.startsWith('https://')
+    ) {
       return fileName;
     }
 
@@ -110,12 +94,6 @@ export const Cart: React.FC = () => {
     return `http://localhost:3333/${cleanFileName}`;
   };
 
-  /*
-   * O /cart retorna os itens do carrinho.
-   *
-   * Buscamos cada produto pelo productId para garantir
-   * que temos também as imagens retornadas pelo backend.
-   */
   const enrichCartWithProducts = async (
     cartData: CartData
   ): Promise<CartData> => {
@@ -161,6 +139,7 @@ export const Cart: React.FC = () => {
     try {
       if (!token) {
         console.error('Token não encontrado');
+        setCart(null);
         return;
       }
 
@@ -313,18 +292,23 @@ export const Cart: React.FC = () => {
 
   const calculatedSavings =
     cart?.items.reduce((total, item) => {
-      const discount =
-        item.product?.discount ?? 0;
+      const productPrice =
+        item.product?.price ?? 0;
 
-      return total + discount * item.quantity;
+      const itemPrice =
+        item.price ?? productPrice;
+
+      const discount =
+        productPrice - itemPrice;
+
+      return total + Math.max(discount, 0) * item.quantity;
     }, 0) ?? 0;
 
   const calculatedShipping =
     cart?.shipping ?? 0;
 
   const calculatedTotal =
-    calculatedSubtotal -
-    calculatedSavings +
+    calculatedSubtotal +
     calculatedShipping;
 
   const availableItems =
@@ -358,12 +342,10 @@ export const Cart: React.FC = () => {
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
 
         <div className="flex items-center justify-between w-full mx-auto px-1">
-
           <div className="flex items-center space-x-3">
-
             <button
               type="button"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/home')}
               aria-label="Go back"
               className="text-black hover:opacity-70 transition-opacity flex items-center justify-center"
             >
@@ -381,14 +363,12 @@ export const Cart: React.FC = () => {
             >
               Shopping Cart
             </h1>
-
           </div>
 
           <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full flex-shrink-0">
             {totalItems}{' '}
             {totalItems === 1 ? 'item' : 'items'}
           </span>
-
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start w-full">
@@ -409,9 +389,7 @@ export const Cart: React.FC = () => {
                   boxSizing: 'border-box',
                 }}
               >
-
                 <div className="flex items-center space-x-2 px-1">
-
                   <span className="w-3 h-3 rounded-full bg-emerald-500" />
 
                   <span
@@ -426,28 +404,19 @@ export const Cart: React.FC = () => {
                   >
                     Available Items ({availableItems.length})
                   </span>
-
                 </div>
 
                 <div
                   className="flex flex-col w-full"
                   style={{ gap: '24px' }}
                 >
-
                   {availableItems.map((item, index) => {
-
                     const product = item.product;
-
                     const variant =
                       product?.variants?.[0];
 
                     const image =
                       getProductImage(product);
-
-                    console.log(
-                      'Imagem enviada para CartItem:',
-                      image
-                    );
 
                     const maxQuantity =
                       variant?.stock ?? 99;
@@ -477,7 +446,6 @@ export const Cart: React.FC = () => {
                         savings=""
                         quantity={item.quantity}
                         maxQuantity={maxQuantity}
-
                         onDecrease={() => {
                           if (item.quantity > 1) {
                             updateQuantity(
@@ -486,21 +454,18 @@ export const Cart: React.FC = () => {
                             );
                           }
                         }}
-
                         onIncrease={() =>
                           updateQuantity(
                             item.productId,
                             'add'
                           )
                         }
-
                         onRemove={() =>
                           removeItem(
                             item.productId,
                             item.quantity
                           )
                         }
-
                         showDivider={
                           index <
                           availableItems.length - 1
@@ -508,17 +473,13 @@ export const Cart: React.FC = () => {
                       />
                     );
                   })}
-
                 </div>
-
               </div>
             )}
 
             {outOfStockItems.length > 0 && (
               <div className="w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
-
                 <div className="flex items-center space-x-2 mb-4">
-
                   <span className="w-3 h-3 rounded-full bg-gray-400" />
 
                   <span
@@ -532,25 +493,16 @@ export const Cart: React.FC = () => {
                   >
                     Out of Stock ({outOfStockItems.length})
                   </span>
-
                 </div>
 
                 <div className="flex flex-col gap-6">
-
                   {outOfStockItems.map((item) => {
-
                     const product = item.product;
-
                     const variant =
                       product?.variants?.[0];
 
                     const image =
                       getProductImage(product);
-
-                    console.log(
-                      'Imagem enviada para CartItem:',
-                      image
-                    );
 
                     const price =
                       item.price ??
@@ -579,7 +531,6 @@ export const Cart: React.FC = () => {
                         maxQuantity={
                           variant?.stock ?? 99
                         }
-
                         onDecrease={() => {
                           if (item.quantity > 1) {
                             updateQuantity(
@@ -588,28 +539,23 @@ export const Cart: React.FC = () => {
                             );
                           }
                         }}
-
                         onIncrease={() =>
                           updateQuantity(
                             item.productId,
                             'add'
                           )
                         }
-
                         onRemove={() =>
                           removeItem(
                             item.productId,
                             item.quantity
                           )
                         }
-
                         showDivider={false}
                       />
                     );
                   })}
-
                 </div>
-
               </div>
             )}
 
@@ -620,7 +566,6 @@ export const Cart: React.FC = () => {
                 </p>
               </div>
             )}
-
           </div>
 
           <div className="flex flex-col gap-6 w-full max-w-[358px] md:max-w-none mx-auto md:mx-0">
@@ -633,16 +578,14 @@ export const Cart: React.FC = () => {
               savings={calculatedSavings}
               shipping={calculatedShipping}
               total={calculatedTotal}
-              onCheckout={() => {}}
+              onCheckout={() => navigate('/checkout')}
               onContinueShopping={() =>
-                navigate('/')
+                navigate('/home')
               }
             />
 
           </div>
-
         </div>
-
       </div>
     </div>
   );

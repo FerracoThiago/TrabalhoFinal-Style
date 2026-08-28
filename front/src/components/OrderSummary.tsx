@@ -20,7 +20,6 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   onCheckout,
   onContinueShopping,
 }) => {
-  // Garante que os valores usados pelo componente sejam sempre números.
   const safeSubtotalItems = Number(subtotalItems) || 0;
   const safeSubtotal = Number(subtotal) || 0;
   const safeSavings = Number(savings) || 0;
@@ -80,9 +79,11 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
               Shipping
             </span>
 
-            <span className="bg-gray-100 text-black text-[10px] font-semibold px-2 py-0.5 rounded">
-              Free
-            </span>
+            {safeShipping === 0 && (
+              <span className="bg-gray-100 text-black text-[10px] font-semibold px-2 py-0.5 rounded">
+                Free
+              </span>
+            )}
           </div>
 
           <span className="font-semibold text-black">
