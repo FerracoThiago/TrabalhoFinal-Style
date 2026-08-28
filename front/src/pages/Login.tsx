@@ -126,7 +126,7 @@ export const Login: React.FC = () => {
             </p>
           )}
 
-          <SubmitButton>
+          <SubmitButton onClick={() => navigate("/home")}>
             Sign In
           </SubmitButton>
         </form>

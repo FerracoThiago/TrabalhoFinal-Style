@@ -13,8 +13,6 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 import { validateCreateProduct, validateUpdateProduct } from "../middlewares/productMiddleware";
 import { validateCreateReview, validateUpdateReview } from "../middlewares/reviewMiddleware";
 import { validateCreateVariant, validateRegister, validateUpdateVariant } from "../middlewares/validateMiddleware";
-import { AddressController } from "../controllers/AddressController";
-import { OrderController } from "../controllers/OrderController";
 import { WishlistController } from "../controllers/WishListController";
 
 const router = Router();
