@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
 import { ArrowLeft } from 'lucide-react';
 
 import { CartItem } from '../components/CartItem';
+
 import { PromoCode } from '../components/PromoCode';
+
 import { OrderSummary } from '../components/OrderSummary';
 
 import tshirtImage from '../assets/images/cart-tshirt.png';
+
 import jeansImage from '../assets/images/cart-jeans.png';
 
 interface ProductImage {
@@ -164,7 +169,6 @@ export const Cart: React.FC = () => {
         await enrichCartWithProducts(data);
 
       setCart(updatedCart);
-
       notifyCartUpdated();
     } catch (error) {
       console.error(
@@ -217,7 +221,6 @@ export const Cart: React.FC = () => {
         await enrichCartWithProducts(data);
 
       setCart(updatedCart);
-
       notifyCartUpdated();
     } catch (error) {
       console.error(
@@ -264,7 +267,6 @@ export const Cart: React.FC = () => {
         await enrichCartWithProducts(data);
 
       setCart(updatedCart);
-
       notifyCartUpdated();
     } catch (error) {
       console.error(
@@ -301,7 +303,10 @@ export const Cart: React.FC = () => {
       const discount =
         productPrice - itemPrice;
 
-      return total + Math.max(discount, 0) * item.quantity;
+      return (
+        total +
+        Math.max(discount, 0) * item.quantity
+      );
     }, 0) ?? 0;
 
   const calculatedShipping =
@@ -412,6 +417,7 @@ export const Cart: React.FC = () => {
                 >
                   {availableItems.map((item, index) => {
                     const product = item.product;
+
                     const variant =
                       product?.variants?.[0];
 
@@ -498,6 +504,7 @@ export const Cart: React.FC = () => {
                 <div className="flex flex-col gap-6">
                   {outOfStockItems.map((item) => {
                     const product = item.product;
+
                     const variant =
                       product?.variants?.[0];
 
@@ -578,7 +585,9 @@ export const Cart: React.FC = () => {
               savings={calculatedSavings}
               shipping={calculatedShipping}
               total={calculatedTotal}
-              onCheckout={() => navigate('/checkout')}
+              onCheckout={() =>
+                navigate('/checkout/shipping')
+              }
               onContinueShopping={() =>
                 navigate('/home')
               }
